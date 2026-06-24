@@ -267,12 +267,12 @@ It starts an `asyncio.Task` that periodically deletes expired cache entries.
 It can be used as an async context manager to automatically stop the cleanup task, or it can be stopped manually via the returned `AsyncCleanupService`'s `stop()` method.
 
 ```python
-async def app():
+async def main():
     async with cache.start_cleanup_task(interval=60):
         ...
 
 # Or, to manage the lifecycle manually:
-async def app():
+async def main():
     svc = cache.start_cleanup_task(interval=60)
     try:
         ...
