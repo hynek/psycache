@@ -1,0 +1,177 @@
+[build-system]
+requires = ["hatchling<2", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+
+[project]
+dynamic = ["version"]
+name = "psycache"
+license = "MIT"
+license-files = ["LICENSE"]
+readme = "README.md"
+authors = [{ name = "Hynek Schlawack", email = "hs@ox.cx" }]
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+    "Typing :: Typed",
+]
+keywords = [
+    "postgresql",
+    "postgres",
+    "psycopg",
+    "cache",
+]
+dependencies = ["attrs", "psycopg"]
+
+[project.optional-dependencies]
+prometheus = ["prometheus-client"]
+sentry = ["sentry-sdk"]
+sqlalchemy = ["sqlalchemy"]
+sqlalchemy-asyncio = ["sqlalchemy[asyncio]"]
+pool = ["psycopg-pool"]
+
+
+[dependency-groups]
+tests = ["coverage", "pytest", "pytest-asyncio", "sybil"]
+dev = [
+    { include-group = "tests" },
+    "mypy",
+    "prometheus-client",
+    "pyrefly",
+    "ruff",
+    "sentry-sdk",
+    "ty",
+    "psycache[pool,sqlalchemy-asyncio]"
+]
+
+
+[tool.hatch.version]
+source = "vcs"
+raw-options = { local_scheme = "no-local-version" }
+
+
+[tool.pytest]
+strict = true
+testpaths = ["tests"]
+addopts = ["-ra", "--import-mode=importlib"]
+log_level = "INFO"
+filterwarnings = ["once::Warning"]
+asyncio_default_fixture_loop_scope = "function"
+
+
+[tool.coverage.run]
+branch = true
+parallel = true
+source = ["psycache", "tests"]
+
+[tool.coverage.paths]
+source = ["src", ".tox/*-tests/**/site-packages"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_also = ["pytest.fail"]
+
+
+[tool.ruff]
+src = ["src", "tests"]
+line-length = 79
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "A",       # shadowing is fine
+    "ARG",     # unused arguments are fine
+    "ANN",     # Mypy is better at this
+    "C901",    # leave complexity to me
+    "COM",     # Formatter takes care of our commas
+    "D",       # We prefer our own docstring style.
+    "E501",    # leave line-length enforcement to formatter
+    "FBT001",  # occasional booleans are fine
+    "FBT003",  # occasional booleans are fine
+    "FIX",     # Yes, we want XXX as a marker.
+    "ISC001",  # conflicts with formatter
+    "PLR0911", # leave complexity to me
+    "PLR0912", # leave complexity to me
+    "PLR0913", # leave complexity to me
+    "PLR0915", # leave complexity to me
+    "RUF009",  # no reason to not use func calls for defaults
+    "SLF001",  # private members are accessed by friendly functions
+    "TC",      # TYPE_CHECKING breaks runtime-inspection
+    "TD",      # we don't follow other people's todo style
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__main__.py" = [
+    "T201",    # the CLI legitimately prints to stdout/stderr
+]
+"*test*" = [
+    "B018",    # useless expression sometimes aren't useless
+    "EM",      # don't care about exceptions hygiene in tests
+    "PLC1901", # empty strings are falsey but also more specific
+    "PLR2004", # magic numbers are fine in tests
+    "PT011",   # broad is fine
+    "PT012",   # sometimes a context needs more than 1 line
+    "RUF012",  # we don't do type annotations in tests
+    "S101",    # assert
+    "S105",    # test passwords can be in-source
+    "S106",    # test passwords can be in-source
+    "S608",    # SQL injection in tests is not a thing
+    "SIM300",  # Yoda rocks in asserts
+    "TRY003",  # don't care about messages inside of class
+]
+
+
+[tool.ruff.lint.isort]
+lines-between-types = 1
+lines-after-imports = 2
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "parents"
+
+
+# Parse tests for LSP, but ignore typing errors.
+[[tool.ty.overrides]]
+include = ["tests"]
+rules.all = "ignore"
+
+[tool.ty.rules]
+# Need to play nicely with Mypy ignores.
+unused-type-ignore-comment = "ignore"
+
+
+[tool.mypy]
+strict = true
+pretty = true
+
+show_error_codes = true
+enable_error_code = ["ignore-without-code"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "conftest.*"
+ignore_errors = true
+
+
+[tool.pyrefly]
+project-includes = ["src"]
+
+
+[tool.pyright]
+ignore = ["tests"]
+
+
+[tool.interrogate]
+omit-covered-files = true
+verbose = 2
+fail-under = 100
+whitelist-regex = ["test_.*"]
