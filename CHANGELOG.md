@@ -11,6 +11,6 @@ The **third number** is for emergencies when we need to start branches for older
 <!-- changelog follows -->
 
 
-## [Unreleased](https://github.com/hynek/psycache/tree/main)
+## [26.1.0](https://github.com/hynek/psycache/tree/26.1.0)
 
 Initial release.
