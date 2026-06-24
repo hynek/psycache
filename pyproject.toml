@@ -106,6 +106,7 @@ ignore = [
     "FBT001",  # occasional booleans are fine
     "FBT003",  # occasional booleans are fine
     "FIX",     # Yes, we want XXX as a marker.
+    "INP001",  # sometimes we want Python files outside of packages
     "ISC001",  # conflicts with formatter
     "PLR0911", # leave complexity to me
     "PLR0912", # leave complexity to me
@@ -149,6 +150,7 @@ ban-relative-imports = "parents"
 # Parse tests for LSP, but ignore typing errors.
 [[tool.ty.overrides]]
 include = ["tests"]
+exclude = ["tests/typing/"]
 rules.all = "ignore"
 
 [tool.ty.rules]
@@ -172,13 +174,18 @@ ignore_errors = true
 module = "conftest.*"
 ignore_errors = true
 
+[[tool.mypy.overrides]]
+module = "tests.typing.*"
+ignore_errors = false
+
+
 
 [tool.pyrefly]
-project-includes = ["src"]
+project-includes = ["src", "tests/typing"]
 
 
 [tool.pyright]
-ignore = ["tests"]
+ignore = ["tests/test_*"]
 
 
 [tool.interrogate]

@@ -8,6 +8,7 @@ Integration with `psycopg_pool`: <https://www.psycopg.org/psycopg3/docs/api/pool
 
 from collections.abc import AsyncIterator, Iterator
 from contextlib import asynccontextmanager, contextmanager
+from typing import Any
 
 import attrs
 import psycopg
@@ -21,7 +22,7 @@ class PsycopgCachePool:
     A cache pool based on `psycopg_pool.ConnectionPool`.
     """
 
-    _pool: ConnectionPool = attrs.field(alias="pool")
+    _pool: ConnectionPool[Any] = attrs.field(alias="pool")
 
     @contextmanager
     def connect(self) -> Iterator[psycopg.Connection]:
@@ -41,7 +42,7 @@ class AsyncPsycopgCachePool:
     A cache pool based on `psycopg_pool.AsyncConnectionPool`.
     """
 
-    _pool: AsyncConnectionPool = attrs.field(alias="pool")
+    _pool: AsyncConnectionPool[Any] = attrs.field(alias="pool")
 
     @asynccontextmanager
     async def connect(self) -> AsyncIterator[psycopg.AsyncConnection]:
