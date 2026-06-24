@@ -6,6 +6,7 @@ build-backend = "hatchling.build"
 [project]
 dynamic = ["version"]
 name = "psycache"
+description = "A psycopg-Backed PostgreSQL Cache"
 license = "MIT"
 license-files = ["LICENSE"]
 readme = "README.md"
@@ -34,6 +35,16 @@ sentry = ["sentry-sdk"]
 sqlalchemy = ["sqlalchemy"]
 sqlalchemy-asyncio = ["sqlalchemy[asyncio]"]
 pool = ["psycopg-pool"]
+
+[project.urls]
+Documentation = "https://github.com/sponsors/hynek"
+Changelog = "https://github.com/hynek/psycache/blob/main/CHANGELOG.md"
+GitHub = "https://github.com/hynek/psycache"
+Funding = "https://github.com/sponsors/hynek"
+Tidelift = "https://tidelift.com?utm_source=lifter&utm_medium=referral&utm_campaign=hynek"
+Mastodon = "https://mastodon.social/@hynek"
+Bluesky = "https://bsky.app/profile/hynek.me"
+Twitter = "https://twitter.com/hynek"
 
 
 [dependency-groups]
