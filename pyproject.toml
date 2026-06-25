@@ -37,7 +37,7 @@ sqlalchemy-asyncio = ["sqlalchemy[asyncio]"]
 pool = ["psycopg-pool"]
 
 [project.urls]
-Documentation = "https://psycache.readthedocs.io/"
+Documentation = "https://psycache.hynek.me/"
 Changelog = "https://github.com/hynek/psycache/blob/main/CHANGELOG.md"
 GitHub = "https://github.com/hynek/psycache"
 Funding = "https://github.com/sponsors/hynek"

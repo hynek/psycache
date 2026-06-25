@@ -2,7 +2,7 @@
 site_name = "psycache"
 site_description = "A psycopg-backed PostgreSQL key-value cache that stores JSON with TTL-based expiration and pluggable instrumentation."
 site_author = "Hynek Schlawack"
-site_url = "https://psycache.readthedocs.io/"
+site_url = "https://psycache.hynek.me/"
 
 copyright = "Copyright &copy; 2026 Hynek Schlawack"
 
