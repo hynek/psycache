@@ -27,7 +27,7 @@ keywords = [
     "psycopg",
     "cache",
 ]
-dependencies = ["attrs", "psycopg"]
+dependencies = ["psycopg"]
 
 [project.optional-dependencies]
 prometheus = ["prometheus-client"]

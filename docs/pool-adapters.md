@@ -59,11 +59,9 @@ All it requires is a `connect()` context manager that yields a [`psycopg.Connect
 from collections.abc import Iterator
 from contextlib import contextmanager
 
-import attrs
 import psycopg
 
 
-@attrs.frozen
 class MyCachePool:
     @contextmanager
     def connect(self) -> Iterator[psycopg.Connection]: ...

@@ -10,19 +10,22 @@ from collections.abc import AsyncIterator, Iterator
 from contextlib import asynccontextmanager, contextmanager
 from typing import Any
 
-import attrs
 import psycopg
 
 from psycopg_pool import AsyncConnectionPool, ConnectionPool
 
 
-@attrs.frozen
 class PsycopgCachePool:
     """
     A cache pool based on `psycopg_pool.ConnectionPool`.
     """
 
-    _pool: ConnectionPool[Any] = attrs.field(alias="pool")
+    __slots__ = ("_pool",)
+
+    _pool: ConnectionPool[Any]
+
+    def __init__(self, pool: ConnectionPool[Any]) -> None:
+        self._pool = pool
 
     @contextmanager
     def connect(self) -> Iterator[psycopg.Connection]:
@@ -36,13 +39,17 @@ class PsycopgCachePool:
                 conn.autocommit = autocommit
 
 
-@attrs.frozen
 class AsyncPsycopgCachePool:
     """
     A cache pool based on `psycopg_pool.AsyncConnectionPool`.
     """
 
-    _pool: AsyncConnectionPool[Any] = attrs.field(alias="pool")
+    __slots__ = ("_pool",)
+
+    _pool: AsyncConnectionPool[Any]
+
+    def __init__(self, pool: AsyncConnectionPool[Any]) -> None:
+        self._pool = pool
 
     @asynccontextmanager
     async def connect(self) -> AsyncIterator[psycopg.AsyncConnection]:
