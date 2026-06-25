@@ -1,7 +1,7 @@
 # *psycache*: *psycopg*-Backed PostgreSQL Cache
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-C06524)](https://github.com/hynek/psycache/blob/main/LICENSE)
-[![Documentation](https://img.shields.io/badge/Docs-Read%20the%20Docs-black)](https://psycache.readthedocs.io/)
+[![Documentation](https://img.shields.io/badge/Docs-Read%20the%20Docs-black)](https://psycache.hynek.me/)
 [![PyPI version](https://img.shields.io/pypi/v/psycache)](https://pypi.org/project/psycache/)
 [![No AI slop inside.](https://img.shields.io/badge/no-slop-purple)](https://github.com/hynek/psycache/blob/main/.github/AI_POLICY.md)
 
@@ -60,7 +60,7 @@ engine.dispose()
 
 ## Documentation
 
-Full documentation lives at **<https://psycache.readthedocs.io/>**.
+Full documentation lives at **<https://psycache.hynek.me/>**.
 
 
 <!-- --8<-- [start:credits] -->
