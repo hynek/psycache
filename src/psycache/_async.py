@@ -10,8 +10,6 @@ from collections.abc import Awaitable, Callable, Sequence
 from contextlib import suppress
 from typing import Any, Self
 
-import attrs
-
 from psycopg.types.json import Jsonb
 
 from . import _sql
@@ -47,7 +45,6 @@ async def _cleanup_loop(
             await asyncio.wait_for(stop_event.wait(), interval_seconds)
 
 
-@attrs.frozen
 class AsyncCleanupService:
     """
     Handle for a periodic cache cleanup task.
@@ -55,8 +52,18 @@ class AsyncCleanupService:
     Can be used as an async context manager or stopped manually via `stop()`.
     """
 
-    _task: asyncio.Task[None] = attrs.field(alias="task")
-    _stop_event: asyncio.Event = attrs.field(alias="stop_event")
+    __slots__ = ("_stop_event", "_task")
+
+    _task: asyncio.Task[None]
+    _stop_event: asyncio.Event
+
+    def __init__(
+        self,
+        task: asyncio.Task[None],
+        stop_event: asyncio.Event,
+    ) -> None:
+        self._task = task
+        self._stop_event = stop_event
 
     async def stop(
         self,

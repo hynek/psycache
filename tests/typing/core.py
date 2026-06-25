@@ -3,7 +3,6 @@ import datetime as dt
 from collections.abc import Iterator
 from contextlib import contextmanager
 
-import attrs
 import psycopg
 
 from psycache import PostgresCache, init_db
@@ -15,9 +14,11 @@ with psycopg.connect(dsn, autocommit=True) as conn:
     init_db(conn)
 
 
-@attrs.frozen
 class RawCachePool:
     dsn: str
+
+    def __init__(self, dsn: str) -> None:
+        self.dsn = dsn
 
     @contextmanager
     def connect(self) -> Iterator[psycopg.Connection]:

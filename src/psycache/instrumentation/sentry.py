@@ -17,7 +17,6 @@ performance.
 from collections.abc import Iterator
 from contextlib import contextmanager
 
-import attrs
 import sentry_sdk
 
 from sentry_sdk.tracing import Span
@@ -32,14 +31,19 @@ from psycache.typing import (
 )
 
 
-@attrs.define
 class _SentryCacheGetSpan:
     """
     Sentry-backed span for cache get operations.
     """
 
+    __slots__ = ("_key", "_span")
+
     _key: str
     _span: Span
+
+    def __init__(self, key: str, span: Span) -> None:
+        self._key = key
+        self._span = span
 
     def record_cache_hit(self, item_size: int) -> None:
         self._span.set_data("cache.hit", True)
@@ -51,40 +55,54 @@ class _SentryCacheGetSpan:
         self._span.set_data("cache.success", True)
 
 
-@attrs.define
 class _SentryCachePutSpan:
     """
     Sentry-backed span for cache put operations.
     """
 
+    __slots__ = ("_key", "_span")
+
     _key: str
     _span: Span
+
+    def __init__(self, key: str, span: Span) -> None:
+        self._key = key
+        self._span = span
 
     def record_put(self, item_size: int) -> None:
         self._span.set_data("cache.item_size", item_size)
         self._span.set_data("cache.success", True)
 
 
-@attrs.define
 class _SentryCacheRemoveSpan:
     """
     Sentry-backed span for cache removal operations.
     """
 
+    __slots__ = ("_key", "_span")
+
     _key: str
     _span: Span
+
+    def __init__(self, key: str, span: Span) -> None:
+        self._key = key
+        self._span = span
 
     def record_removed(self) -> None:
         self._span.set_data("cache.success", True)
 
 
-@attrs.define
 class _SentryCacheFlushSpan:
     """
     Sentry-backed span for cache flush operations.
     """
 
+    __slots__ = ("_span",)
+
     _span: Span
+
+    def __init__(self, span: Span) -> None:
+        self._span = span
 
     def record_flush(self, num_flushed: int) -> None:
         self._span.set_data("cache.num_flushed", num_flushed)
@@ -127,15 +145,11 @@ class SentryInstrumentation:
             yield _SentryCacheRemoveSpan(key, span)
 
     @contextmanager
-    def start_cache_cleanup_span(
-        self,
-    ) -> Iterator[CacheCleanupSpan]:
+    def start_cache_cleanup_span(self) -> Iterator[CacheCleanupSpan]:
         yield NoopAnySpan()
 
     @contextmanager
-    def start_cache_flush_span(
-        self,
-    ) -> Iterator[CacheFlushSpan]:
+    def start_cache_flush_span(self) -> Iterator[CacheFlushSpan]:
         with sentry_sdk.start_span(
             op="cache.flush", name="psycache flush"
         ) as span:

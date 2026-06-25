@@ -16,6 +16,19 @@ The **third number** is for emergencies when we need to start branches for older
 
 ## [Unreleased](https://github.com/hynek/psycache/compare/26.1.0...HEAD)
 
+### Added
+
+- Proper docs at <https://psycache.hynek.me/>.
+  [#2](https://github.com/hynek/psycache/pull/2)
+
+
+## Changed
+
+- Replaced *attrs* by hand-written classes.
+  Sadly, the documentation ecosystem is not ready and *dataclasses* are not fit for public APIs.
+  This means *psycopg* is the **only** dependency.
+  [#3](https://github.com/hynek/psycache/pull/3)
+
 
 ## [26.1.0](https://github.com/hynek/psycache/tree/26.1.0) - 2026-06-24
 

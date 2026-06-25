@@ -9,8 +9,6 @@ import threading
 from collections.abc import Callable, Sequence
 from typing import Any, Self
 
-import attrs
-
 from psycopg.types.json import Jsonb
 
 from . import _sql
@@ -45,7 +43,6 @@ def _cleanup_loop(
         stop_event.wait(interval_seconds)
 
 
-@attrs.frozen
 class CleanupService:
     """
     Handle for a periodic cache cleanup thread.
@@ -53,8 +50,16 @@ class CleanupService:
     Can be used as a context manager or stopped manually via `stop()`.
     """
 
-    _thread: threading.Thread = attrs.field(alias="thread")
-    _stop_event: threading.Event = attrs.field(alias="stop_event")
+    __slots__ = ("_stop_event", "_thread")
+
+    _thread: threading.Thread
+    _stop_event: threading.Event
+
+    def __init__(
+        self, thread: threading.Thread, stop_event: threading.Event
+    ) -> None:
+        self._thread = thread
+        self._stop_event = stop_event
 
     def stop(self, timeout: dt.timedelta | float | None = 5.0) -> bool:
         """

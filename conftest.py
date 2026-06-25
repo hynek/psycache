@@ -6,9 +6,9 @@ import importlib.util
 
 from collections.abc import AsyncIterator, Iterator
 from contextlib import asynccontextmanager, contextmanager
+from dataclasses import dataclass
 from doctest import ELLIPSIS
 
-import attrs
 import psycopg
 import pytest
 
@@ -79,7 +79,7 @@ _INSTRUMENTATIONS = [
 ]
 
 
-@attrs.frozen
+@dataclass
 class _RawCachePool:
     """
     A minimal CachePool that opens a psycopg connection per checkout.
@@ -108,7 +108,7 @@ def _cache(request: pytest.FixtureRequest, db_dsn: str):
     return PostgresCache(_RawCachePool(db_dsn), instrumentations=request.param)
 
 
-@attrs.frozen
+@dataclass
 class _RawAsyncCachePool:
     """
     A minimal AsyncCachePool that opens a psycopg connection per checkout.
