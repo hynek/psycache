@@ -18,7 +18,7 @@ build:
     build:
       html:
         # Set canonical URL
-        - python -c \'import os,pathlib; p = pathlib.Path("zensical.toml"); p.write_text(p.read_text().replace("https://psycache.hynek.me/", os.environ["READTHEDOCS_CANONICAL_URL"]))'
+        - sed -i "s|https://psycache.hynek.me/|$READTHEDOCS_CANONICAL_URL|g" zensical.toml
         - uvx --with tox-uv tox run -e docs-build
         # Zensical builds into site/; hand it to Read the Docs.
         # https://docs.readthedocs.com/platform/latest/intro/zensical.html
