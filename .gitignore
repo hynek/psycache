@@ -10,3 +10,4 @@
 *.py[co]
 dist
 htmlcov
+site

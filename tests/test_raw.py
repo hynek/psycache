@@ -36,7 +36,7 @@ def test_raw_set_conflict(cache: PostgresCache):
 
     assert {"foo": "second"} == cache.get_raw(key)
 
-    with cache.pool.connect() as conn:
+    with cache._pool.connect() as conn:
         expires_at = conn.execute(
             "SELECT expires_at FROM psycache WHERE key = %s",
             (key,),

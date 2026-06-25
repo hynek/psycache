@@ -37,7 +37,7 @@ sqlalchemy-asyncio = ["sqlalchemy[asyncio]"]
 pool = ["psycopg-pool"]
 
 [project.urls]
-Documentation = "https://github.com/sponsors/hynek"
+Documentation = "https://psycache.readthedocs.io/"
 Changelog = "https://github.com/hynek/psycache/blob/main/CHANGELOG.md"
 GitHub = "https://github.com/hynek/psycache"
 Funding = "https://github.com/sponsors/hynek"
@@ -49,6 +49,7 @@ Twitter = "https://twitter.com/hynek"
 
 [dependency-groups]
 tests = ["coverage", "pytest", "pytest-asyncio", "sybil"]
+docs = ["zensical", "mkdocstrings-python"]
 dev = [
     { include-group = "tests" },
     "mypy",

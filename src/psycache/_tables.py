@@ -20,5 +20,11 @@ CREATE INDEX IF NOT EXISTS ix_psycache_expires_at
 
 
 def init_db(conn: psycopg.Connection) -> None:
+    """
+    Create the *psycache* table if it doesn't exist.
+
+    Args:
+        conn: A psycopg connection.
+    """
     conn.execute(_CREATE_TABLE)
     conn.execute(_CREATE_INDEX)

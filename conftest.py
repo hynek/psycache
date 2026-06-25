@@ -13,7 +13,7 @@ import psycopg
 import pytest
 
 from sybil import Sybil
-from sybil.parsers import myst
+from sybil.parsers import markdown
 
 from psycache import AsyncPostgresCache, PostgresCache, init_db
 from psycache.instrumentation.prometheus import PrometheusInstrumentation
@@ -26,11 +26,13 @@ collect_ignore = [
     if importlib.util.find_spec(name) is None
 ]
 
+# The docs are CommonMark/Material (Zensical), so use the Markdown parsers.
+# Executable examples use plain ```python fences; illustrative snippets are
+# preceded by an HTML comment <!-- skip: next -->.
 pytest_collect_file = Sybil(
     parsers=[
-        myst.DocTestDirectiveParser(optionflags=ELLIPSIS),
-        myst.PythonCodeBlockParser(doctest_optionflags=ELLIPSIS),
-        myst.SkipParser(),
+        markdown.PythonCodeBlockParser(doctest_optionflags=ELLIPSIS),
+        markdown.SkipParser(),
     ],
     patterns=["*.md"],
     fixtures=["psycache_database"],
