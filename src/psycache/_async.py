@@ -110,6 +110,10 @@ class AsyncPostgresCache:
     async def get_raw(
         self, key: str, span_name: str | None = None
     ) -> dict[str, Any] | None:
+        """
+        Same as [`PostgresCache.get_raw`][psycache.PostgresCache.get_raw],
+        but async.
+        """
         with _lookup_span(self._instrumentations, key, span_name) as span:
             async with self._pool.connect() as conn:
                 cur = await conn.execute(_sql.GET, (key,))
@@ -130,6 +134,10 @@ class AsyncPostgresCache:
         ttl: int | dt.timedelta,
         span_name: str | None = None,
     ) -> None:
+        """
+        Same as [`PostgresCache.put_raw`][psycache.PostgresCache.put_raw],
+        but async.
+        """
         with _put_span(self._instrumentations, key, span_name) as span:
             if isinstance(ttl, int):
                 ttl = dt.timedelta(seconds=ttl)
@@ -145,6 +153,10 @@ class AsyncPostgresCache:
             span.record_put(row[0])  # type: ignore[index]  # ty: ignore[not-subscriptable]
 
     async def remove(self, key: str) -> None:
+        """
+        Same as [`PostgresCache.remove`][psycache.PostgresCache.remove],
+        but async.
+        """
         with _remove_span(self._instrumentations, key) as span:
             async with self._pool.connect() as conn:
                 await conn.execute(_sql.REMOVE, (key,))
@@ -153,9 +165,8 @@ class AsyncPostgresCache:
 
     async def cleanup_expired(self) -> int:
         """
-        Delete all expired cache entries.
-
-        Return the number of deleted entries.
+        Same as [`PostgresCache.cleanup_expired`][psycache.PostgresCache.cleanup_expired],
+        but async.
         """
         with _cleanup_span(self._instrumentations) as span:
             async with self._pool.connect() as conn:
@@ -170,7 +181,8 @@ class AsyncPostgresCache:
         self, interval: dt.timedelta | float
     ) -> AsyncCleanupService:
         """
-        Start a task that periodically deletes expired cache entries.
+        Start a [`Task`][asyncio.Task] that periodically deletes expired
+        cache entries.
 
         Must be called within a running asyncio event loop.
 
@@ -197,9 +209,8 @@ class AsyncPostgresCache:
 
     async def flush(self) -> int:
         """
-        Flush all cache entries.
-
-        Return the number of flushed entries.
+        Same as [`PostgresCache.flush`][psycache.PostgresCache.flush],
+        but async.
         """
         with _flush_span(self._instrumentations) as span:
             async with self._pool.connect() as conn:
