@@ -17,6 +17,8 @@ build:
 
     build:
       html:
+        # Set canonical URL
+        - sed -i "s|https://psycache.hynek.me/|$READTHEDOCS_CANONICAL_URL|g" zensical.toml
         - uvx --with tox-uv tox run -e docs-build
         # Zensical builds into site/; hand it to Read the Docs.
         # https://docs.readthedocs.com/platform/latest/intro/zensical.html
