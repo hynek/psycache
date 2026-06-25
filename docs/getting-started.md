@@ -34,7 +34,7 @@ $ uv pip install "psycache[sqlalchemy]"
 ## Initialize the database
 
 *psycache* keeps everything in a single [unlogged table](https://www.postgresql.org/docs/current/sql-createtable.html#SQL-CREATETABLE-UNLOGGED).
-Create it once – either from Python:
+Create it once – either from Python using [`init_db()`][psycache.init_db]:
 
 ```python
 import psycopg

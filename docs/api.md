@@ -9,11 +9,11 @@ icon: material/api
 ::: psycache
     options:
       members:
+        - init_db
         - PostgresCache
         - AsyncPostgresCache
         - CleanupService
         - AsyncCleanupService
-        - init_db
 
 
 ## Pool adapters
