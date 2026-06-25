@@ -88,22 +88,30 @@ class AsyncCleanupService:
         await self.stop()
 
 
-@attrs.frozen
 class AsyncPostgresCache:
     """
     An asyncio-based Postgres cache.
     """
 
-    pool: AsyncCachePool
-    instrumentations: Sequence[CacheInstrumentation] = attrs.field(
-        default=(), kw_only=True
-    )
+    __slots__ = ("_instrumentations", "_pool")
+
+    _pool: AsyncCachePool
+    _instrumentations: Sequence[CacheInstrumentation]
+
+    def __init__(
+        self,
+        pool: AsyncCachePool,
+        *,
+        instrumentations: Sequence[CacheInstrumentation] = (),
+    ):
+        self._pool = pool
+        self._instrumentations = instrumentations
 
     async def get_raw(
         self, key: str, span_name: str | None = None
     ) -> dict[str, Any] | None:
-        with _lookup_span(self.instrumentations, key, span_name) as span:
-            async with self.pool.connect() as conn:
+        with _lookup_span(self._instrumentations, key, span_name) as span:
+            async with self._pool.connect() as conn:
                 cur = await conn.execute(_sql.GET, (key,))
                 row = await cur.fetchone()
 
@@ -122,13 +130,13 @@ class AsyncPostgresCache:
         ttl: int | dt.timedelta,
         span_name: str | None = None,
     ) -> None:
-        with _put_span(self.instrumentations, key, span_name) as span:
+        with _put_span(self._instrumentations, key, span_name) as span:
             if isinstance(ttl, int):
                 ttl = dt.timedelta(seconds=ttl)
 
             expires_at = dt.datetime.now().astimezone() + ttl
 
-            async with self.pool.connect() as conn:
+            async with self._pool.connect() as conn:
                 cur = await conn.execute(
                     _sql.PUT, (key, Jsonb(value), expires_at)
                 )
@@ -137,8 +145,8 @@ class AsyncPostgresCache:
             span.record_put(row[0])  # type: ignore[index]  # ty: ignore[not-subscriptable]
 
     async def remove(self, key: str) -> None:
-        with _remove_span(self.instrumentations, key) as span:
-            async with self.pool.connect() as conn:
+        with _remove_span(self._instrumentations, key) as span:
+            async with self._pool.connect() as conn:
                 await conn.execute(_sql.REMOVE, (key,))
 
             span.record_removed()
@@ -149,8 +157,8 @@ class AsyncPostgresCache:
 
         Return the number of deleted entries.
         """
-        with _cleanup_span(self.instrumentations) as span:
-            async with self.pool.connect() as conn:
+        with _cleanup_span(self._instrumentations) as span:
+            async with self._pool.connect() as conn:
                 cur = await conn.execute(_sql.CLEANUP_EXPIRED)
                 num_deleted: int = cur.rowcount
 
@@ -193,8 +201,8 @@ class AsyncPostgresCache:
 
         Return the number of flushed entries.
         """
-        with _flush_span(self.instrumentations) as span:
-            async with self.pool.connect() as conn:
+        with _flush_span(self._instrumentations) as span:
+            async with self._pool.connect() as conn:
                 cur = await conn.execute(_sql.FLUSH)
                 num_flushed: int = cur.rowcount
 

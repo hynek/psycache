@@ -39,7 +39,7 @@ async def test_raw_set_conflict(acache):
 
     assert {"foo": "second"} == await acache.get_raw(key)
 
-    async with acache.pool.connect() as conn:
+    async with acache._pool.connect() as conn:
         cur = await conn.execute(
             "SELECT expires_at FROM psycache WHERE key = %s",
             (key,),
@@ -96,7 +96,7 @@ async def test_flush(acache):
 
     assert 4 == await acache.flush()
 
-    async with acache.pool.connect() as conn:
+    async with acache._pool.connect() as conn:
         cur = await conn.execute("SELECT count(*) FROM psycache")
         count = (await cur.fetchone())[0]
 

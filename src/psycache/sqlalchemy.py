@@ -9,40 +9,50 @@ Integration with SQLAlchemy.
 from collections.abc import AsyncIterator, Iterator
 from contextlib import asynccontextmanager, contextmanager
 
-import attrs
 import psycopg
 
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 
-@attrs.frozen
 class SQLAlchemyCachePool:
     """
     A cache pool based on a SQLAlchemy engine.
+
+    Args:
+        engine: The SQLAlchemy engine to use.
     """
 
-    engine: Engine
+    __slots__ = ("_engine",)
+
+    _engine: Engine
+
+    def __init__(self, engine: Engine) -> None:
+        self._engine = engine
 
     @contextmanager
     def connect(self) -> Iterator[psycopg.Connection]:
-        with self.engine.connect().execution_options(
+        with self._engine.connect().execution_options(
             isolation_level="AUTOCOMMIT"
         ) as conn:
             yield conn.connection  # type: ignore[misc]  # ty: ignore[invalid-yield]
 
 
-@attrs.frozen
 class AsyncSQLAlchemyCachePool:
     """
     A cache pool based on a SQLAlchemy async engine.
     """
 
-    engine: AsyncEngine
+    __slots__ = ("_engine",)
+
+    _engine: AsyncEngine
+
+    def __init__(self, engine: AsyncEngine) -> None:
+        self._engine = engine
 
     @asynccontextmanager
     async def connect(self) -> AsyncIterator[psycopg.AsyncConnection]:
-        async with self.engine.connect() as sa_conn:
+        async with self._engine.connect() as sa_conn:
             conn = await sa_conn.execution_options(
                 isolation_level="AUTOCOMMIT"
             )

@@ -84,22 +84,47 @@ class CleanupService:
         self.stop()
 
 
-@attrs.frozen
 class PostgresCache:
     """
     A Postgres-based cache.
     """
 
-    pool: CachePool
-    instrumentations: Sequence[CacheInstrumentation] = attrs.field(
-        default=(), kw_only=True
-    )
+    __slots__ = ("_instrumentations", "_pool")
+
+    _pool: CachePool
+    _instrumentations: Sequence[CacheInstrumentation]
+
+    def __init__(
+        self,
+        pool: CachePool,
+        *,
+        instrumentations: Sequence[CacheInstrumentation] = (),
+    ):
+        """
+        Args:
+            pool: The cache pool to use.
+            instrumentations: Sequence of instrumentations to use.
+        """
+        self._pool = pool
+        self._instrumentations = instrumentations
 
     def get_raw(
         self, key: str, span_name: str | None = None
     ) -> dict[str, Any] | None:
-        with _lookup_span(self.instrumentations, key, span_name) as span:
-            with self.pool.connect() as conn:
+        """
+        Get a raw dict from the cache for *key*.
+
+        Args:
+            key: The key to look up.
+
+            span_name: Name for the span that is passed to instrumentation.
+
+        Returns:
+            The raw dict for *key*, or None if the key is not found or
+                expired.
+        """
+        with _lookup_span(self._instrumentations, key, span_name) as span:
+            with self._pool.connect() as conn:
                 row = conn.execute(_sql.GET, (key,)).fetchone()
 
             if row is None:
@@ -117,13 +142,25 @@ class PostgresCache:
         ttl: int | dt.timedelta,
         span_name: str | None = None,
     ) -> None:
-        with _put_span(self.instrumentations, key, span_name) as span:
+        """
+        Put *value* into the cache under *key* with time-to-live of *ttl*.
+
+        Args:
+            key: The key under which to store the value.
+
+            value: The value to store in the cache.
+
+            ttl: The time-to-live for the cache entry.
+
+            span_name:  Name for the span that is passed to instrumentation.
+        """
+        with _put_span(self._instrumentations, key, span_name) as span:
             if isinstance(ttl, int):
                 ttl = dt.timedelta(seconds=ttl)
 
             expires_at = dt.datetime.now().astimezone() + ttl
 
-            with self.pool.connect() as conn:
+            with self._pool.connect() as conn:
                 row = conn.execute(
                     _sql.PUT, (key, Jsonb(value), expires_at)
                 ).fetchone()
@@ -131,8 +168,16 @@ class PostgresCache:
             span.record_put(row[0])  # type: ignore[index]  # ty: ignore[not-subscriptable]
 
     def remove(self, key: str) -> None:
-        with _remove_span(self.instrumentations, key) as span:
-            with self.pool.connect() as conn:
+        """
+        Remove the cache entry for *key*.
+
+        Trying to remove a non-existent key is a no-op.
+
+        Args:
+            key: The key to remove.
+        """
+        with _remove_span(self._instrumentations, key) as span:
+            with self._pool.connect() as conn:
                 conn.execute(_sql.REMOVE, (key,))
 
             span.record_removed()
@@ -143,8 +188,8 @@ class PostgresCache:
 
         Return the number of deleted entries.
         """
-        with _cleanup_span(self.instrumentations) as span:
-            with self.pool.connect() as conn:
+        with _cleanup_span(self._instrumentations) as span:
+            with self._pool.connect() as conn:
                 num_deleted: int = conn.execute(_sql.CLEANUP_EXPIRED).rowcount
 
             span.record_cleanup(num_deleted)
@@ -157,8 +202,8 @@ class PostgresCache:
 
         Return the number of flushed entries.
         """
-        with _flush_span(self.instrumentations) as span:
-            with self.pool.connect() as conn:
+        with _flush_span(self._instrumentations) as span:
+            with self._pool.connect() as conn:
                 num_flushed: int = conn.execute(_sql.FLUSH).rowcount
 
             span.record_flush(num_flushed)

@@ -13,11 +13,11 @@ import psycopg
 class CachePool(Protocol):
     """
     Protocol for a class that provides a way to connect to a
-    `psycopg.Connection`.
+    [`psycopg.Connection`][].
 
     Implemented by adapters that wrap a higher-level connection source
     (for example, a psycopg pool or a SQLAlchemy engine) and hand
-    out an auto-commit `psycopg.Connection`.
+    out an auto-commit [`psycopg.Connection`][].
     """
 
     def connect(self) -> AbstractContextManager[psycopg.Connection]:
@@ -31,11 +31,11 @@ class CachePool(Protocol):
 class AsyncCachePool(Protocol):
     """
     Protocol for a class that provides a way to connect to a
-    `psycopg.AsyncConnection`.
+    [`psycopg.AsyncConnection`][].
 
     Implemented by adapters that wrap a higher-level connection source
     (for example, a psycopg pool or a SQLAlchemy engine) and hand
-    out an auto-commit `psycopg.AsyncConnection`.
+    out an auto-commit [`psycopg.AsyncConnection`][].
     """
 
     def connect(

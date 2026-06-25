@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 """
-Integration with `psycopg_pool`: <https://www.psycopg.org/psycopg3/docs/api/pool.html>
+Integration with [`psycopg_pool`](https://www.psycopg.org/psycopg3/docs/api/pool.html).
 """
 
 from collections.abc import AsyncIterator, Iterator

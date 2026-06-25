@@ -45,7 +45,7 @@ def test_flush(cache: PostgresCache):
     """
 
     def count():
-        with cache.pool.connect() as conn:
+        with cache._pool.connect() as conn:
             return conn.execute("SELECT count(*) FROM psycache").fetchone()[0]
 
     assert 0 == count()
