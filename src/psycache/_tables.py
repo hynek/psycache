@@ -4,27 +4,23 @@
 
 import psycopg
 
-
-_CREATE_TABLE = """\
-CREATE UNLOGGED TABLE IF NOT EXISTS psycache (
-    key text PRIMARY KEY,
-    value jsonb NOT NULL,
-    expires_at timestamptz NOT NULL
-)
-"""
-
-_CREATE_INDEX = """\
-CREATE INDEX IF NOT EXISTS ix_psycache_expires_at
-    ON psycache (expires_at)
-"""
+from . import _sql
 
 
-def init_db(conn: psycopg.Connection) -> None:
+def init_db(conn: psycopg.Connection, *, schema: str | None = None) -> None:
     """
     Create the *psycache* table if it doesn't exist.
 
     Args:
         conn: A psycopg connection.
+
+        schema:
+            The PostgreSQL schema in which to create the cache table. If
+            `None`, the table is created using the connection's current
+            default schema.
+
+    Changes:
+        - **26.3.0**: added *schema* parameter
     """
-    conn.execute(_CREATE_TABLE)
-    conn.execute(_CREATE_INDEX)
+    conn.execute(_sql.create_table(schema))
+    conn.execute(_sql.create_index(schema))

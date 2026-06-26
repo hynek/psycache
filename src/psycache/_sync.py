@@ -94,23 +94,38 @@ class PostgresCache:
     A Postgres-based cache.
     """
 
-    __slots__ = ("_instrumentations", "_pool")
+    __slots__ = ("_instrumentations", "_pool", "_queries")
 
     _pool: CachePool
     _instrumentations: Sequence[CacheInstrumentation]
+    _queries: _sql.CacheQueries
 
     def __init__(
         self,
         pool: CachePool,
         *,
+        schema: str | None = None,
         instrumentations: Sequence[CacheInstrumentation] = (),
     ):
         """
         Args:
             pool: The cache pool to use.
+
+            schema:
+                The PostgreSQL schema that contains the cache table. If
+                `None`, queries use the connection's current default schema.
+
             instrumentations: Sequence of instrumentations to use.
+
+        Changes:
+            - **26.3.0**: added *schema* parameter
         """
         self._pool = pool
+        self._queries = (
+            _sql.DEFAULT_QUERIES
+            if schema is None
+            else _sql.CacheQueries(schema)
+        )
         self._instrumentations = instrumentations
 
     def get_raw(
@@ -130,7 +145,7 @@ class PostgresCache:
         """
         with _lookup_span(self._instrumentations, key, span_name) as span:
             with self._pool.connect() as conn:
-                row = conn.execute(_sql.GET, (key,)).fetchone()
+                row = conn.execute(self._queries.get, (key,)).fetchone()
 
             if row is None:
                 span.record_cache_miss()
@@ -167,7 +182,7 @@ class PostgresCache:
 
             with self._pool.connect() as conn:
                 row = conn.execute(
-                    _sql.PUT, (key, Jsonb(value), expires_at)
+                    self._queries.put, (key, Jsonb(value), expires_at)
                 ).fetchone()
 
             span.record_put(row[0])  # type: ignore[index]  # ty: ignore[not-subscriptable]
@@ -183,7 +198,7 @@ class PostgresCache:
         """
         with _remove_span(self._instrumentations, key) as span:
             with self._pool.connect() as conn:
-                conn.execute(_sql.REMOVE, (key,))
+                conn.execute(self._queries.remove, (key,))
 
             span.record_removed()
 
@@ -195,7 +210,9 @@ class PostgresCache:
         """
         with _cleanup_span(self._instrumentations) as span:
             with self._pool.connect() as conn:
-                num_deleted: int = conn.execute(_sql.CLEANUP_EXPIRED).rowcount
+                num_deleted: int = conn.execute(
+                    self._queries.cleanup_expired
+                ).rowcount
 
             span.record_cleanup(num_deleted)
 
@@ -209,7 +226,7 @@ class PostgresCache:
         """
         with _flush_span(self._instrumentations) as span:
             with self._pool.connect() as conn:
-                num_flushed: int = conn.execute(_sql.FLUSH).rowcount
+                num_flushed: int = conn.execute(self._queries.flush).rowcount
 
             span.record_flush(num_flushed)
 

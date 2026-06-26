@@ -5,7 +5,10 @@
 import datetime as dt
 import secrets
 
+import psycopg
 import pytest
+
+from psycache import AsyncPostgresCache, init_db
 
 
 pytestmark = pytest.mark.asyncio
@@ -65,6 +68,31 @@ async def test_remove(acache):
     await acache.remove(key)
 
     assert await acache.get_raw(key) is None
+
+
+async def test_schema_is_isolated(acache, db_dsn):
+    """
+    A cache configured with a schema uses that schema's table.
+    """
+    schema = "psycache_raw_async_test"
+
+    with psycopg.connect(db_dsn, autocommit=True) as conn:
+        conn.execute(f"DROP SCHEMA IF EXISTS {schema} CASCADE")
+        conn.execute(f"CREATE SCHEMA {schema}")
+        init_db(conn, schema=schema)
+
+    schema_cache = AsyncPostgresCache(
+        acache._pool,
+        schema=schema,
+        instrumentations=acache._instrumentations,
+    )
+    key = secrets.token_urlsafe()
+
+    await acache.put_raw(key, {"schema": False}, ttl=10)
+    await schema_cache.put_raw(key, {"schema": True}, ttl=10)
+
+    assert {"schema": False} == await acache.get_raw(key)
+    assert {"schema": True} == await schema_cache.get_raw(key)
 
 
 async def test_cleanup_expired(acache):
