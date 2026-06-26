@@ -54,6 +54,14 @@ with psycopg.connect(
 $ python -Im psycache init-db postgresql://psycache@127.0.0.1/psycache
 ```
 
+Omit the DSN to print the SQL instead:
+
+```console
+$ python -Im psycache init-db
+CREATE UNLOGGED TABLE IF NOT EXISTS "psycache" (
+...
+```
+
 This creates the `psycache` unlogged table and an index on `expires_at`.
 [`init_db()`][psycache.init_db] is idempotent, so running it again leaves existing data untouched.
 
@@ -85,6 +93,8 @@ From the command line, use `--schema`:
 ```console
 $ python -Im psycache init-db --schema app_cache postgresql://psycache@127.0.0.1/psycache
 ```
+
+Without a DSN, `--schema` qualifies the printed SQL instead.
 
 
 ## Store and retrieve
