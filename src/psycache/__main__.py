@@ -9,11 +9,21 @@ from collections.abc import Sequence
 
 import psycopg
 
+from . import _sql
 from ._tables import init_db
 
 
-def _do_init_db(dsn: str, schema: str | None = None) -> int:
+def _dump_init_db_sql(schema: str | None = None) -> None:
+    print(f"{_sql.create_table(schema).as_string().rstrip()};")
+    print(f"{_sql.create_index(schema).as_string().rstrip()};")
+
+
+def _do_init_db(dsn: str | None, schema: str | None = None) -> int:
     try:
+        if dsn is None:
+            _dump_init_db_sql(schema)
+            return 0
+
         with psycopg.connect(dsn, autocommit=True) as conn:
             init_db(conn, schema=schema)
     except (ValueError, psycopg.Error) as e:
@@ -35,7 +45,7 @@ def _build_parser() -> argparse.ArgumentParser:
         "init-db",
         help="Create the psycache table and index.",
         description="Create the psycache table and index in the database "
-        "identified by DSN.",
+        "identified by DSN, or print the SQL to stdout if DSN is omitted.",
     )
     init_db_parser.add_argument(
         "--schema",
@@ -43,8 +53,10 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     init_db_parser.add_argument(
         "dsn",
+        nargs="?",
         metavar="DSN",
-        help="A libpq connection string, e.g. postgresql://user@host/db.",
+        help="A libpq connection string, e.g. postgresql://user@host/db. "
+        "If omitted, print the SQL to stdout.",
     )
 
     return parser

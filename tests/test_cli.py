@@ -53,6 +53,40 @@ def test_init_db_creates_table_in_schema(db_dsn: str):
     assert 0 == main(["init-db", "--schema", schema, db_dsn])
 
 
+def test_init_db_without_dsn_prints_sql(
+    capsys: pytest.CaptureFixture[str],
+):
+    """
+    `init-db` prints the SQL to initialize the cache if no DSN is passed.
+    """
+    assert 0 == main(["init-db"])
+
+    out = capsys.readouterr().out
+    assert 'CREATE UNLOGGED TABLE IF NOT EXISTS "psycache" (' in out
+    assert (
+        'CREATE INDEX IF NOT EXISTS "ix_psycache_expires_at"\n'
+        '    ON "psycache" (expires_at);'
+    ) in out
+
+
+def test_init_db_without_dsn_prints_schema_sql(
+    capsys: pytest.CaptureFixture[str],
+):
+    """
+    `init-db --schema` prints schema-qualified SQL if no DSN is passed.
+    """
+    assert 0 == main(["init-db", "--schema", "app_cache"])
+
+    out = capsys.readouterr().out
+    assert (
+        'CREATE UNLOGGED TABLE IF NOT EXISTS "app_cache"."psycache" (' in out
+    )
+    assert (
+        'CREATE INDEX IF NOT EXISTS "ix_psycache_expires_at"\n'
+        '    ON "app_cache"."psycache" (expires_at);'
+    ) in out
+
+
 def test_init_db_reports_connection_failure(
     capsys: pytest.CaptureFixture[str],
 ):
