@@ -6,7 +6,7 @@
 [![No AI slop inside.](https://img.shields.io/badge/no-slop-purple)](https://github.com/hynek/psycache/blob/main/.github/AI_POLICY.md)
 
 
-A simple key-value cache that stores JSON in PostgreSQL through [*psycopg*](https://www.psycopg.org/) 3, with TTL-based expiration and pluggable instrumentation.
+A key-value cache that stores JSON in PostgreSQL through [*psycopg*](https://www.psycopg.org/) 3, with TTL-based expiration and pluggable instrumentation.
 
 - Sync and async ✔︎
 - Type-safe ✔︎
