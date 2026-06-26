@@ -20,6 +20,7 @@ The **third number** is for emergencies when we need to start branches for older
 ### Added
 
 - Support for PostgreSQL schemas for keeping multiple cache tables in one database.
+  [#5](https://github.com/hynek/psycache/pull/5)
 
 
 ## [26.2.0](https://github.com/hynek/psycache/compare/26.1.0...26.2.0) - 2026-06-25
