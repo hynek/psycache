@@ -30,7 +30,7 @@ First, install *psycache* from PyPI with the `sqlalchemy` extra:
 $ uv pip install "psycache[sqlalchemy]"
 ```
 
-Initialize the cache table once (`python -Im psycache init-db <dsn>` does the same from the shell), then store and retrieve JSON with a TTL:
+Initialize the cache table once (`python -Im psycache init-db <dsn>` does the same from the shell; add `--schema <schema>` to use a non-default PostgreSQL schema), then store and retrieve JSON with a TTL:
 
 ```python
 import psycopg

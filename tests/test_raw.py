@@ -5,7 +5,9 @@
 import datetime as dt
 import secrets
 
-from psycache import PostgresCache
+import pytest
+
+from psycache import PostgresCache, init_db
 
 
 def test_raw_get_and_set(cache: PostgresCache):
@@ -61,3 +63,42 @@ def test_remove(cache: PostgresCache):
     cache.remove(key)
 
     assert cache.get_raw(key) is None
+
+
+def test_schema_is_isolated(cache: PostgresCache):
+    """
+    A cache configured with a schema uses that schema's table.
+    """
+    schema = "psycache_raw_test"
+
+    with cache._pool.connect() as conn:
+        conn.execute(f"DROP SCHEMA IF EXISTS {schema} CASCADE")
+        conn.execute(f"CREATE SCHEMA {schema}")
+        init_db(conn, schema=schema)
+
+    schema_cache = PostgresCache(
+        cache._pool,
+        schema=schema,
+        instrumentations=cache._instrumentations,
+    )
+    key = secrets.token_urlsafe()
+
+    cache.put_raw(key, {"schema": False}, ttl=10)
+    schema_cache.put_raw(key, {"schema": True}, ttl=10)
+
+    assert {"schema": False} == cache.get_raw(key)
+    assert {"schema": True} == schema_cache.get_raw(key)
+
+
+def test_empty_schema_is_rejected(cache: PostgresCache):
+    """
+    An empty schema name is rejected.
+    """
+    with pytest.raises(ValueError, match="schema must not be empty"):
+        PostgresCache(cache._pool, schema="")
+
+    with (
+        cache._pool.connect() as conn,
+        pytest.raises(ValueError, match="schema must not be empty"),
+    ):
+        init_db(conn, schema="")

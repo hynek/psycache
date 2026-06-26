@@ -12,11 +12,11 @@ import psycopg
 from ._tables import init_db
 
 
-def _do_init_db(dsn: str) -> int:
+def _do_init_db(dsn: str, schema: str | None = None) -> int:
     try:
         with psycopg.connect(dsn, autocommit=True) as conn:
-            init_db(conn)
-    except psycopg.Error as e:
+            init_db(conn, schema=schema)
+    except (ValueError, psycopg.Error) as e:
         print(f"psycache: init-db failed: {e}", file=sys.stderr)
         return 1
 
@@ -38,6 +38,10 @@ def _build_parser() -> argparse.ArgumentParser:
         "identified by DSN.",
     )
     init_db_parser.add_argument(
+        "--schema",
+        help="PostgreSQL schema in which to create the cache table.",
+    )
+    init_db_parser.add_argument(
         "dsn",
         metavar="DSN",
         help="A libpq connection string, e.g. postgresql://user@host/db.",
@@ -50,7 +54,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
 
-    return _do_init_db(args.dsn)
+    return _do_init_db(args.dsn, schema=args.schema)
 
 
 if __name__ == "__main__":  # pragma: no cover

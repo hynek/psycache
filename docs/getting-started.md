@@ -58,6 +58,35 @@ This creates the `psycache` unlogged table and an index on `expires_at`.
 [`init_db()`][psycache.init_db] is idempotent, so running it again leaves existing data untouched.
 
 
+### Schemas
+
+By default, *psycache* uses the connection's current default schema.
+To keep multiple cache tables in one database, create them in separate PostgreSQL schemas and pass the same schema to initialization and the cache object:
+
+```python
+from sqlalchemy import create_engine
+
+from psycache import PostgresCache
+from psycache.sqlalchemy import SQLAlchemyCachePool
+
+
+with psycopg.connect(
+    "postgresql://psycache@127.0.0.1/psycache", autocommit=True
+) as conn:
+    conn.execute("CREATE SCHEMA IF NOT EXISTS app_cache")
+    psycache.init_db(conn, schema="app_cache")
+
+engine = create_engine("postgresql+psycopg://psycache@127.0.0.1/psycache")
+cache = PostgresCache(SQLAlchemyCachePool(engine), schema="app_cache")
+```
+
+From the command line, use `--schema`:
+
+```console
+$ python -Im psycache init-db --schema app_cache postgresql://psycache@127.0.0.1/psycache
+```
+
+
 ## Store and retrieve
 
 Assuming you already have a SQLAlchemy [`Engine`][sqlalchemy.engine.Engine] in your application, wrap it in a [`SQLAlchemyCachePool`][psycache.sqlalchemy.SQLAlchemyCachePool] and hand it to [`PostgresCache`][psycache.PostgresCache]:
