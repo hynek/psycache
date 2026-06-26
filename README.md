@@ -46,6 +46,7 @@ import psycache
 from psycache import PostgresCache
 from psycache.sqlalchemy import SQLAlchemyCachePool
 
+
 with psycopg.connect(
     "postgresql://psycache@127.0.0.1/psycache", autocommit=True
 ) as conn:
