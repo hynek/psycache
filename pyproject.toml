@@ -150,9 +150,8 @@ ban-relative-imports = "parents"
 
 # Parse tests for LSP, but ignore typing errors.
 [[tool.ty.overrides]]
-include = ["tests"]
-exclude = ["tests/typing/"]
 rules.all = "ignore"
+include = ["tests"]
 
 [tool.ty.rules]
 # Need to play nicely with Mypy ignores.
@@ -176,13 +175,13 @@ module = "conftest.*"
 ignore_errors = true
 
 [[tool.mypy.overrides]]
-module = "tests.typing.*"
+module = "typing_tests.*"
 ignore_errors = false
 
 
 
 [tool.pyrefly]
-project-includes = ["src", "tests/typing"]
+project-includes = ["src", "typing_tests"]
 
 
 [tool.pyright]
