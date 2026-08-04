@@ -4,12 +4,6 @@ icon: material/rocket-launch
 
 # Getting Started
 
-!!! note
-
-    This documentation uses [*uv*](https://docs.astral.sh/uv/) for package management and so should you.
-    It's trivial, though, to translate the commands to your package manager of choice.
-
-
 ## Installation
 
 *psycache* is published on [PyPI](https://pypi.org/project/psycache/), so install it with your favorite package manager:

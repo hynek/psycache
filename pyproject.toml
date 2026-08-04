@@ -102,6 +102,7 @@ ignore = [
     "ANN",     # Mypy is better at this
     "C901",    # leave complexity to me
     "COM",     # Formatter takes care of our commas
+    "CPY",     # they expect a very specific shape of a copyright notice
     "D",       # We prefer our own docstring style.
     "E501",    # leave line-length enforcement to formatter
     "FBT001",  # occasional booleans are fine
@@ -113,6 +114,7 @@ ignore = [
     "PLR0912", # leave complexity to me
     "PLR0913", # leave complexity to me
     "PLR0915", # leave complexity to me
+    "PLR0917", # leave complexity to me
     "RUF009",  # no reason to not use func calls for defaults
     "SLF001",  # private members are accessed by friendly functions
     "TC",      # TYPE_CHECKING breaks runtime-inspection

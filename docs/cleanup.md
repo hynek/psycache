@@ -52,8 +52,11 @@ from psycache import AsyncPostgresCache
 from psycache.sqlalchemy import AsyncSQLAlchemyCachePool
 
 
-aengine = create_async_engine("postgresql+psycopg://psycache@127.0.0.1/psycache")
+aengine = create_async_engine(
+    "postgresql+psycopg://psycache@127.0.0.1/psycache"
+)
 acache = AsyncPostgresCache(AsyncSQLAlchemyCachePool(aengine))
+
 
 async def main():
     async with acache.start_cleanup_task(interval=60):
@@ -64,6 +67,7 @@ async def main():
         ...  # your application runs here
     finally:
         await svc.stop()
+
 
 asyncio.run(main())
 ```
