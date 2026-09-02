@@ -67,18 +67,18 @@ def test_remove(cache: PostgresCache):
 
 def test_schema_is_isolated(cache: PostgresCache):
     """
-    A cache configured with a schema uses that schema's table.
+    A cache configured with a schema-qualified table uses that table.
     """
     schema = "psycache_raw_test"
 
     with cache._pool.connect() as conn:
         conn.execute(f"DROP SCHEMA IF EXISTS {schema} CASCADE")
         conn.execute(f"CREATE SCHEMA {schema}")
-        init_db(conn, schema=schema)
+        init_db(conn, f"{schema}.psycache")
 
     schema_cache = PostgresCache(
         cache._pool,
-        schema=schema,
+        table=f"{schema}.psycache",
         instrumentations=cache._instrumentations,
     )
     key = secrets.token_urlsafe()
@@ -90,15 +90,15 @@ def test_schema_is_isolated(cache: PostgresCache):
     assert {"schema": True} == schema_cache.get_raw(key)
 
 
-def test_empty_schema_is_rejected(cache: PostgresCache):
+def test_empty_table_part_is_rejected(cache: PostgresCache):
     """
-    An empty schema name is rejected.
+    A table name that is empty or has an empty part is rejected.
     """
-    with pytest.raises(ValueError, match="schema must not be empty"):
-        PostgresCache(cache._pool, schema="")
+    with pytest.raises(ValueError, match="empty parts"):
+        PostgresCache(cache._pool, table="app.")
 
     with (
         cache._pool.connect() as conn,
-        pytest.raises(ValueError, match="schema must not be empty"),
+        pytest.raises(ValueError, match="empty parts"),
     ):
-        init_db(conn, schema="")
+        init_db(conn, "")

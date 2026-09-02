@@ -19,6 +19,9 @@ You can find our backwards-compatibility policy [here](https://github.com/hynek/
 
 - *psycache* is now considered stable and the usual [backwards-compatibility](https://github.com/hynek/psycache/blob/main/.github/SECURITY.md) promises apply.
 
+- The *schema* parameters of `init_db()`, `PostgresCache`, and `AsyncPostgresCache` and the `--schema` option of `init-db` have been replaced by *table* and `--table`.
+  They take the name of the cache table, optionally schema-qualified with a dot (for example, `app_cache.psycache`).
+
 
 ## [26.3.0](https://github.com/hynek/psycache/compare/26.2.0...26.3.0) - 2026-06-26
 

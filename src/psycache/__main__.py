@@ -13,19 +13,19 @@ from . import _sql
 from ._tables import init_db
 
 
-def _dump_init_db_sql(schema: str | None = None) -> None:
-    print(f"{_sql.create_table(schema).as_string().rstrip()};")
-    print(f"{_sql.create_index(schema).as_string().rstrip()};")
+def _dump_init_db_sql(table: str) -> None:
+    print(f"{_sql.create_table(table).as_string().rstrip()};")
+    print(f"{_sql.create_index(table).as_string().rstrip()};")
 
 
-def _do_init_db(dsn: str | None, schema: str | None = None) -> int:
+def _do_init_db(dsn: str | None, table: str) -> int:
     try:
         if dsn is None:
-            _dump_init_db_sql(schema)
+            _dump_init_db_sql(table)
             return 0
 
         with psycopg.connect(dsn, autocommit=True) as conn:
-            init_db(conn, schema=schema)
+            init_db(conn, table)
     except (ValueError, psycopg.Error) as e:
         print(f"psycache: init-db failed: {e}", file=sys.stderr)
         return 1
@@ -48,8 +48,10 @@ def _build_parser() -> argparse.ArgumentParser:
         "identified by DSN, or print the SQL to stdout if DSN is omitted.",
     )
     init_db_parser.add_argument(
-        "--schema",
-        help="PostgreSQL schema in which to create the cache table.",
+        "--table",
+        default="psycache",
+        help="Name of the cache table, optionally schema-qualified with a "
+        "dot (default: %(default)s).",
     )
     init_db_parser.add_argument(
         "dsn",
@@ -66,7 +68,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
 
-    return _do_init_db(args.dsn, schema=args.schema)
+    return _do_init_db(args.dsn, args.table)
 
 
 if __name__ == "__main__":  # pragma: no cover

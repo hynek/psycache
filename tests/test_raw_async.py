@@ -72,18 +72,18 @@ async def test_remove(acache):
 
 async def test_schema_is_isolated(acache, db_dsn):
     """
-    A cache configured with a schema uses that schema's table.
+    A cache configured with a schema-qualified table uses that table.
     """
     schema = "psycache_raw_async_test"
 
     with psycopg.connect(db_dsn, autocommit=True) as conn:
         conn.execute(f"DROP SCHEMA IF EXISTS {schema} CASCADE")
         conn.execute(f"CREATE SCHEMA {schema}")
-        init_db(conn, schema=schema)
+        init_db(conn, f"{schema}.psycache")
 
     schema_cache = AsyncPostgresCache(
         acache._pool,
-        schema=schema,
+        table=f"{schema}.psycache",
         instrumentations=acache._instrumentations,
     )
     key = secrets.token_urlsafe()

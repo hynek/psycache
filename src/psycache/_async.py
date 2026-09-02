@@ -110,18 +110,14 @@ class AsyncPostgresCache:
         self,
         pool: AsyncCachePool,
         *,
-        schema: str | None = None,
+        table: str = "psycache",
         instrumentations: Sequence[CacheInstrumentation] = (),
     ):
         """
         Same parameters as [`PostgresCache`][psycache.PostgresCache].
         """
         self._pool = pool
-        self._queries = (
-            _sql.DEFAULT_QUERIES
-            if schema is None
-            else _sql.CacheQueries(schema)
-        )
+        self._queries = _sql.CacheQueries(table)
         self._instrumentations = instrumentations
 
     async def get_raw(

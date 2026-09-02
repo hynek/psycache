@@ -28,7 +28,8 @@ def test_init_db_creates_table(db_dsn: str):
 
 def test_init_db_creates_table_in_schema(db_dsn: str):
     """
-    `init-db --schema` creates the psycache table in that schema.
+    A schema-qualified `--table` creates the psycache table in that
+    schema.
     """
     schema = "psycache_cli_test"
 
@@ -36,7 +37,7 @@ def test_init_db_creates_table_in_schema(db_dsn: str):
         conn.execute(f"DROP SCHEMA IF EXISTS {schema} CASCADE")
         conn.execute(f"CREATE SCHEMA {schema}")
 
-    assert 0 == main(["init-db", "--schema", schema, db_dsn])
+    assert 0 == main(["init-db", "--table", f"{schema}.psycache", db_dsn])
 
     with psycopg.connect(db_dsn, autocommit=True) as conn:
         regclass = conn.execute(
@@ -50,7 +51,7 @@ def test_init_db_creates_table_in_schema(db_dsn: str):
     assert "psycache_cli_test.ix_psycache_expires_at" == index_regclass
 
     # Running it again against an existing table is a no-op.
-    assert 0 == main(["init-db", "--schema", schema, db_dsn])
+    assert 0 == main(["init-db", "--table", f"{schema}.psycache", db_dsn])
 
 
 def test_init_db_without_dsn_prints_sql(
@@ -73,9 +74,10 @@ def test_init_db_without_dsn_prints_schema_sql(
     capsys: pytest.CaptureFixture[str],
 ):
     """
-    `init-db --schema` prints schema-qualified SQL if no DSN is passed.
+    A schema-qualified `--table` prints schema-qualified SQL if no DSN is
+    passed.
     """
-    assert 0 == main(["init-db", "--schema", "app_cache"])
+    assert 0 == main(["init-db", "--table", "app_cache.psycache"])
 
     out = capsys.readouterr().out
     assert (
@@ -84,6 +86,24 @@ def test_init_db_without_dsn_prints_schema_sql(
     assert (
         'CREATE INDEX IF NOT EXISTS "ix_psycache_expires_at"\n'
         '    ON "app_cache"."psycache" (expires_at);'
+    ) in out
+
+
+def test_init_db_without_dsn_prints_custom_table_sql(
+    capsys: pytest.CaptureFixture[str],
+):
+    """
+    A custom table name renames the index along with the table.
+    """
+    assert 0 == main(["init-db", "--table", "app_cache.sessions"])
+
+    out = capsys.readouterr().out
+    assert (
+        'CREATE UNLOGGED TABLE IF NOT EXISTS "app_cache"."sessions" (' in out
+    )
+    assert (
+        'CREATE INDEX IF NOT EXISTS "ix_sessions_expires_at"\n'
+        '    ON "app_cache"."sessions" (expires_at);'
     ) in out
 
 
@@ -98,16 +118,16 @@ def test_init_db_reports_connection_failure(
     assert "init-db failed" in capsys.readouterr().err
 
 
-def test_init_db_reports_empty_schema(
+def test_init_db_reports_empty_table_part(
     db_dsn: str,
     capsys: pytest.CaptureFixture[str],
 ):
     """
-    An empty schema name is reported on stderr and exits non-zero.
+    A table name with an empty part is reported on stderr and exits non-zero.
     """
-    assert 1 == main(["init-db", "--schema", "", db_dsn])
+    assert 1 == main(["init-db", "--table", "app_cache.", db_dsn])
 
-    assert "schema must not be empty" in capsys.readouterr().err
+    assert "empty parts" in capsys.readouterr().err
 
 
 def test_requires_a_command():

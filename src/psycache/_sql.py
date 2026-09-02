@@ -5,36 +5,38 @@
 from psycopg import sql
 
 
-_TABLE_NAME = "psycache"
-_EXPIRES_AT_INDEX_NAME = "ix_psycache_expires_at"
-
-
-def _cache_table(schema: str | None = None) -> sql.Identifier:
-    if schema == "":
-        msg = "schema must not be empty"
+def _cache_table(table: str) -> sql.Identifier:
+    """
+    Turn a dotted *table* name into a (schema-qualified) identifier.
+    """
+    parts = table.split(".")
+    if not all(parts):
+        msg = "the cache-table name must not be empty or have empty parts"
         raise ValueError(msg)
 
-    if schema is None:
-        return sql.Identifier(_TABLE_NAME)
-
-    return sql.Identifier(schema, _TABLE_NAME)
+    return sql.Identifier(*parts)
 
 
-def create_table(schema: str | None = None) -> sql.Composed:
+def create_table(table: str) -> sql.Composed:
     return sql.SQL("""\
 CREATE UNLOGGED TABLE IF NOT EXISTS {} (
     key text PRIMARY KEY,
     value jsonb NOT NULL,
     expires_at timestamptz NOT NULL
 )
-""").format(_cache_table(schema))
+""").format(_cache_table(table))
 
 
-def create_index(schema: str | None = None) -> sql.Composed:
+def create_index(table: str) -> sql.Composed:
+    cache_table = _cache_table(table)
+
     return sql.SQL("""\
 CREATE INDEX IF NOT EXISTS {}
     ON {} (expires_at)
-""").format(sql.Identifier(_EXPIRES_AT_INDEX_NAME), _cache_table(schema))
+""").format(
+        sql.Identifier(f"ix_{table.rsplit('.', 1)[-1]}_expires_at"),
+        cache_table,
+    )
 
 
 class CacheQueries:
@@ -50,15 +52,15 @@ class CacheQueries:
     put: sql.Composed
     remove: sql.Composed
 
-    def __init__(self, schema: str | None) -> None:
-        table = _cache_table(schema)
+    def __init__(self, table: str) -> None:
+        cache_table = _cache_table(table)
 
         self.get = sql.SQL("""\
 SELECT value, pg_column_size(value)
 FROM {}
 WHERE key = %s
   AND expires_at > statement_timestamp()
-""").format(table)
+""").format(cache_table)
 
         self.put = sql.SQL("""\
 INSERT INTO {} (key, value, expires_at)
@@ -67,21 +69,18 @@ ON CONFLICT (key) DO UPDATE SET
     value = EXCLUDED.value,
     expires_at = EXCLUDED.expires_at
 RETURNING pg_column_size(value)
-""").format(table)
+""").format(cache_table)
 
         self.remove = sql.SQL("""\
 DELETE FROM {}
 WHERE key = %s
-""").format(table)
+""").format(cache_table)
 
         self.cleanup_expired = sql.SQL("""\
 DELETE FROM {}
 WHERE expires_at < statement_timestamp()
-""").format(table)
+""").format(cache_table)
 
         self.flush = sql.SQL("""\
 DELETE FROM {}
-""").format(table)
-
-
-DEFAULT_QUERIES = CacheQueries(None)
+""").format(cache_table)

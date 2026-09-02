@@ -104,28 +104,25 @@ class PostgresCache:
         self,
         pool: CachePool,
         *,
-        schema: str | None = None,
+        table: str = "psycache",
         instrumentations: Sequence[CacheInstrumentation] = (),
     ):
         """
         Args:
             pool: The cache pool to use.
 
-            schema:
-                The PostgreSQL schema that contains the cache table. If
-                `None`, queries use the connection's current default schema.
+            table:
+                The name of the cache table, optionally schema-qualified with
+                a dot (for example, `"app_cache.psycache"`).
 
             instrumentations: Sequence of instrumentations to use.
 
         Changes:
             - **26.3.0**: added *schema* parameter
+            - **26.4.0**: replaced *schema* with *table*
         """
         self._pool = pool
-        self._queries = (
-            _sql.DEFAULT_QUERIES
-            if schema is None
-            else _sql.CacheQueries(schema)
-        )
+        self._queries = _sql.CacheQueries(table)
         self._instrumentations = instrumentations
 
     def get_raw(
