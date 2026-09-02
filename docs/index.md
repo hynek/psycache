@@ -1,6 +1,6 @@
-# psycache
+# *psycache*
 
-*A Psycopg-backed PostgreSQL cache.*
+*A Psycopg-backed PostgreSQL cache*
 
 ---
 

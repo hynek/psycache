@@ -1,4 +1,6 @@
-# *psycache*: Psycopg-Backed PostgreSQL Cache
+# *psycache*
+
+*A Psycopg-backed PostgreSQL cache*
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-C06524)](https://github.com/hynek/psycache/blob/main/LICENSE)
 [![Documentation](https://img.shields.io/badge/Docs-Read%20them!-black)](https://psycache.hynek.me/)
