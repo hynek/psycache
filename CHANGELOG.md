@@ -8,6 +8,8 @@ The **first number** of the version is the year.
 The **second number** is incremented with each release, starting at 1 for each year.
 The **third number** is for emergencies when we need to start branches for older releases.
 
+You can find our backwards-compatibility policy [here](https://github.com/hynek/psycache/blob/main/.github/SECURITY.md).
+
 <!-- changelog follows -->
 
 
@@ -15,7 +17,7 @@ The **third number** is for emergencies when we need to start branches for older
 
 ### Changed
 
-- *psycache* is now considered stable and classified as *Production/Stable* on PyPI.
+- *psycache* is now considered stable and the usual [backwards-compatibility](https://github.com/hynek/psycache/blob/main/.github/SECURITY.md) promises apply.
 
 
 ## [26.3.0](https://github.com/hynek/psycache/compare/26.2.0...26.3.0) - 2026-06-26
