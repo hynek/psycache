@@ -8,14 +8,14 @@ The **first number** of the version is the year.
 The **second number** is incremented with each release, starting at 1 for each year.
 The **third number** is for emergencies when we need to start branches for older releases.
 
-> [!IMPORTANT]
-> This package is currently in beta and looks forward to your feedback.
-> The code is battle-tested, but APIs may change.
-
 <!-- changelog follows -->
 
 
 ## [Unreleased](https://github.com/hynek/psycache/compare/26.3.0...HEAD)
+
+### Changed
+
+- *psycache* is now considered stable and classified as *Production/Stable* on PyPI.
 
 
 ## [26.3.0](https://github.com/hynek/psycache/compare/26.2.0...26.3.0) - 2026-06-26
