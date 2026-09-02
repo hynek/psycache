@@ -1,4 +1,4 @@
-# *psycache*: *psycopg*-Backed PostgreSQL Cache
+# *psycache*: Psycopg-Backed PostgreSQL Cache
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-C06524)](https://github.com/hynek/psycache/blob/main/LICENSE)
 [![Documentation](https://img.shields.io/badge/Docs-Read%20the%20Docs-black)](https://psycache.hynek.me/)
@@ -6,7 +6,7 @@
 [![No AI slop inside.](https://img.shields.io/badge/no-slop-purple)](https://github.com/hynek/psycache/blob/main/.github/AI_POLICY.md)
 
 
-A key-value cache that stores JSON in PostgreSQL through [*psycopg*](https://www.psycopg.org/) 3, with TTL-based expiration and pluggable instrumentation.
+A key-value cache that stores JSON in PostgreSQL through [Psycopg](https://www.psycopg.org/) 3, with TTL-based expiration and pluggable instrumentation.
 
 - Sync and async ✔︎
 - Type-safe ✔︎

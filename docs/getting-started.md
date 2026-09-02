@@ -12,7 +12,7 @@ icon: material/rocket-launch
 $ uv pip install psycache
 ```
 
-The core package depends only on [*psycopg*](https://www.psycopg.org/).
+The core package depends only on [Psycopg](https://www.psycopg.org/).
 The pool adapters are optional and each lives behind an extra.
 The examples here use SQLAlchemy, so install the `sqlalchemy` extra too:
 

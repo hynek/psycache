@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 [project]
 dynamic = ["version"]
 name = "psycache"
-description = "A psycopg-Backed PostgreSQL Cache"
+description = "A Psycopg-backed PostgreSQL cache"
 license = "MIT"
 license-files = ["LICENSE"]
 readme = "README.md"

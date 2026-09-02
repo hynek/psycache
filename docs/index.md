@@ -1,10 +1,10 @@
 # psycache
 
-*A psycopg-backed PostgreSQL cache.*
+*A Psycopg-backed PostgreSQL cache.*
 
 ---
 
-**_psycache_** is a key-value cache that stores JSON in PostgreSQL through [*psycopg*](https://www.psycopg.org/psycopg3/docs/) 3, with TTL-based expiration, and pluggable instrumentation.
+**_psycache_** is a key-value cache that stores JSON in PostgreSQL through [Psycopg](https://www.psycopg.org/psycopg3/docs/) 3, with TTL-based expiration, and pluggable instrumentation.
 
 - **Sync and async**: [`PostgresCache`][psycache.PostgresCache] and a fully async [`AsyncPostgresCache`][psycache.AsyncPostgresCache] that mirrors its API.
 

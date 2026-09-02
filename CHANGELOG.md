@@ -46,7 +46,7 @@ You can find our backwards-compatibility policy [here](https://github.com/hynek/
 
 - Replaced *attrs* by hand-written classes.
   Sadly, the documentation ecosystem is not ready and *dataclasses* are not fit for public APIs.
-  This means *psycopg* is the **only** dependency.
+  This means Psycopg is the **only** dependency.
   [#3](https://github.com/hynek/psycache/pull/3)
 
 

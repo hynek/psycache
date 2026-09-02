@@ -8,7 +8,7 @@ icon: material/cog
 [`PostgresCache`][psycache.PostgresCache] doesn't open connections itself.
 It needs an implementation for the [`psycache.typing.CachePool`][] [`Protocol`][typing.Protocol]: anything with a `connect()` context manager that yields a [`psycopg.Connection`][].
 
-The shipped pool adapters are optional and each lives behind a packaging extra; the cache itself needs only *psycopg*.
+The shipped pool adapters are optional and each lives behind a packaging extra; the cache itself needs only Psycopg.
 
 Pick the one that matches the infrastructure you already have.
 
