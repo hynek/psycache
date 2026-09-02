@@ -60,10 +60,11 @@ This creates the `psycache` unlogged table and an index on `expires_at`.
 [`init_db()`][psycache.init_db] is idempotent, so running it again leaves existing data untouched.
 
 
-### Schemas
+### Table names
 
-By default, *psycache* uses the connection's current default schema.
-To keep multiple cache tables in one database, create them in separate PostgreSQL schemas and pass the same schema to initialization and the cache object:
+By default, *psycache* uses a table called `psycache` in the connection's default schema.
+To keep multiple caches in one database, pass a different table name to initialization and the cache object.
+The name can be schema-qualified with a dot:
 
 ```python
 from sqlalchemy import create_engine
@@ -76,19 +77,19 @@ with psycopg.connect(
     "postgresql://psycache@127.0.0.1/psycache", autocommit=True
 ) as conn:
     conn.execute("CREATE SCHEMA IF NOT EXISTS app_cache")
-    psycache.init_db(conn, schema="app_cache")
+    psycache.init_db(conn, "app_cache.psycache")
 
 engine = create_engine("postgresql+psycopg://psycache@127.0.0.1/psycache")
-cache = PostgresCache(SQLAlchemyCachePool(engine), schema="app_cache")
+cache = PostgresCache(SQLAlchemyCachePool(engine), table="app_cache.psycache")
 ```
 
-From the command line, use `--schema`:
+From the command line, use `--table`:
 
 ```console
-$ python -Im psycache init-db --schema app_cache postgresql://psycache@127.0.0.1/psycache
+$ python -Im psycache init-db --table app_cache.psycache postgresql://psycache@127.0.0.1/psycache
 ```
 
-Without a DSN, `--schema` qualifies the printed SQL instead.
+Without a DSN, `--table` qualifies the printed SQL instead.
 
 
 ## Store and retrieve

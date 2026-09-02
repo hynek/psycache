@@ -12,6 +12,7 @@ dsn = "postgresql://psycache@127.0.0.1/psycache"
 
 with psycopg.connect(dsn, autocommit=True) as conn:
     init_db(conn)
+    init_db(conn, "app_cache.psycache")
 
 
 class RawCachePool:
@@ -27,6 +28,7 @@ class RawCachePool:
 
 
 cache = PostgresCache(RawCachePool(dsn))
+PostgresCache(RawCachePool(dsn), table="app_cache.psycache")
 
 cache.put_raw("user:alice", {"score": 42}, ttl=300)
 cache.put_raw("other-key", {"data": "value"}, ttl=dt.timedelta(hours=1))
