@@ -3,7 +3,7 @@
 *A Psycopg-backed PostgreSQL cache*
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-C06524)](https://github.com/hynek/psycache/blob/main/LICENSE)
-[![Documentation](https://img.shields.io/badge/Docs-Read%20them!-black)](https://psycache.hynek.me/)
+[![Documentation](https://img.shields.io/badge/Docs-Read%20Them!-black)](https://psycache.hynek.me/)
 [![PyPI version](https://img.shields.io/pypi/v/psycache)](https://pypi.org/project/psycache/)
 [![No AI slop inside.](https://img.shields.io/badge/no-slop-purple)](https://github.com/hynek/psycache/blob/main/.github/AI_POLICY.md)
 
