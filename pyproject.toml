@@ -26,7 +26,7 @@ keywords = [
     "psycopg",
     "cache",
 ]
-dependencies = ["psycopg"]
+dependencies = ["psycopg>3"]
 
 [project.optional-dependencies]
 prometheus = ["prometheus-client"]
@@ -187,7 +187,6 @@ ignore = [
     "TRY003",  # don't care about messages inside of class
 ]
 
-
 [tool.ruff.lint.isort]
 lines-between-types = 1
 lines-after-imports = 2
@@ -200,10 +199,6 @@ ban-relative-imports = "parents"
 [[tool.ty.overrides]]
 rules.all = "ignore"
 include = ["tests"]
-
-[tool.ty.rules]
-# Need to play nicely with Mypy ignores.
-unused-type-ignore-comment = "ignore"
 
 
 [tool.mypy]
@@ -227,13 +222,12 @@ module = "typing_tests.*"
 ignore_errors = false
 
 
-
 [tool.pyrefly]
 project-includes = ["src", "typing_tests"]
 
 
 [tool.pyright]
-ignore = ["tests/test_*"]
+ignore = ["tests", "conftest.py"]
 
 
 [tool.interrogate]
