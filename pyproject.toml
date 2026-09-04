@@ -1,15 +1,14 @@
 [build-system]
-requires = ["hatchling<2", "hatch-vcs"]
+requires = ["hatchling<2", "hatch-vcs", "hatch-fancy-pypi-readme"]
 build-backend = "hatchling.build"
 
 
 [project]
-dynamic = ["version"]
+dynamic = ["version", "readme"]
 name = "psycache"
 description = "A Psycopg-backed PostgreSQL cache"
 license = "MIT"
 license-files = ["LICENSE"]
-readme = "README.md"
 authors = [{ name = "Hynek Schlawack", email = "hs@ox.cx" }]
 requires-python = ">=3.11"
 classifiers = [
@@ -65,6 +64,53 @@ dev = [
 [tool.hatch.version]
 source = "vcs"
 raw-options = { local_scheme = "no-local-version" }
+
+[tool.hatch.metadata.hooks.fancy-pypi-readme]
+content-type = "text/markdown"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "README.md"
+start-after = "<!-- --8<-- [start:header] -->\n"
+end-before = "<!-- --8<-- [end:header] -->"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "README.md"
+start-after = "<!-- --8<-- [start:spiel] -->"
+end-before = "\n<!-- --8<-- [start:credits] -->"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+text = """
+
+## Release Information
+
+"""
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "CHANGELOG.md"
+start-after = "<!-- changelog follows -->"
+pattern = "\n(###.+?\n)## "
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+text = """
+---
+
+[Full Changelog →](https://github.com/hynek/psycache/blob/main/CHANGELOG.md)
+
+
+"""
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.fragments]]
+path = "README.md"
+start-at = "## Credits"
+end-before = "\n<!-- --8<-- [end:credits] -->"
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = '> \[!(.*)\]'
+replacement = '> **\1**'
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = ']\(\./(.*)\)'
+replacement = '](https://github.com/hynek/psycache/blob/main/\1)'
 
 
 [tool.pytest]

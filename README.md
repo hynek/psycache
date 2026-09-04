@@ -1,6 +1,8 @@
+<!-- --8<-- [start:header] -->
 # *psycache*
 
 *A Psycopg-backed PostgreSQL cache*
+<!-- --8<-- [end:header] -->
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-C06524)](https://github.com/hynek/psycache/blob/main/LICENSE)
 [![Documentation](https://img.shields.io/badge/Docs-Read%20Them!-black)](https://psycache.hynek.me/)
@@ -8,6 +10,7 @@
 [![No AI slop inside.](https://img.shields.io/badge/no-slop-purple)](https://github.com/hynek/psycache/blob/main/.github/AI_POLICY.md)
 
 
+<!-- --8<-- [start:spiel] -->
 A key-value cache that stores JSON in PostgreSQL through [Psycopg](https://www.psycopg.org/) 3, with TTL-based expiration and pluggable instrumentation.
 
 - Sync and async ✔︎
@@ -20,6 +23,8 @@ A key-value cache that stores JSON in PostgreSQL through [Psycopg](https://www.p
 
 It's a great fit when you already have PostgreSQL and need a fast cache without introducing another piece of infrastructure like Redis.
 For example, you can safely share a SQLAlchemy [`Engine`](https://docs.sqlalchemy.org/en/20/core/connections.html#sqlalchemy.engine.Engine) (or [`AsyncEngine`](https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncEngine)) with *psycache*.
+
+<!-- --8<-- [end:spiel] -->
 
 
 ## Quick Start
