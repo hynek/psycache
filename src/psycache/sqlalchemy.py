@@ -8,14 +8,15 @@ Integration with SQLAlchemy.
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator, Iterator
 from contextlib import asynccontextmanager, contextmanager
 from typing import TYPE_CHECKING
 
-import psycopg
-
 
 if TYPE_CHECKING:
+    from collections.abc import AsyncIterator, Iterator
+
+    import psycopg
+
     from sqlalchemy.engine import Engine
     from sqlalchemy.ext.asyncio import AsyncEngine
 
