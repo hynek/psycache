@@ -13,6 +13,9 @@ You can find our backwards-compatibility policy [here](https://github.com/hynek/
 <!-- changelog follows -->
 
 
+## [Unreleased](https://github.com/hynek/psycache/compare/26.4.0...HEAD)
+
+
 ## [26.4.0](https://github.com/hynek/psycache/compare/26.3.0...26.4.0) - 2026-09-29
 
 ### Changed
