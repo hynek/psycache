@@ -4,10 +4,13 @@
 
 from __future__ import annotations
 
-from contextlib import AbstractAsyncContextManager, AbstractContextManager
-from typing import Protocol
+from typing import TYPE_CHECKING, Protocol
 
-import psycopg
+
+if TYPE_CHECKING:
+    from contextlib import AbstractAsyncContextManager, AbstractContextManager
+
+    import psycopg
 
 
 class CachePool(Protocol):

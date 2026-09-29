@@ -26,6 +26,14 @@ collect_ignore = [
     if importlib.util.find_spec(name) is None
 ]
 
+# SQLAlchemy imports greenlet lazily, so sqlalchemy.ext.asyncio is importable
+# without it, but unusable.
+try:
+    import greenlet  # noqa: F401
+    import sqlalchemy.ext.asyncio  # noqa: F401
+except ImportError:
+    collect_ignore.append("tests/test_sqlalchemy_async.py")
+
 # The docs are CommonMark/Material (Zensical), so use the Markdown parsers.
 # Executable examples use plain ```python fences; illustrative snippets are
 # preceded by an HTML comment <!-- skip: next -->.
@@ -42,6 +50,11 @@ pytest_collect_file = Sybil(
 @pytest.fixture(name="db_dsn", scope="session")
 def _db_dsn():
     return "postgresql://psycache@127.0.0.1/psycache"
+
+
+@pytest.fixture(name="sqla_url")
+def _sqla_url(db_dsn):
+    return db_dsn.replace("postgresql", "postgresql+psycopg")
 
 
 @pytest.fixture(name="psycache_database", scope="session", autouse=True)

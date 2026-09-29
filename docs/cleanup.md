@@ -86,6 +86,7 @@ On top of that, *pgbg* supervises the thread and restarts it after a crash.
 Wrap [`PostgresCache.cleanup_expired()`][psycache.PostgresCache.cleanup_expired] in a work unit and start it as an elected service (example requires `pgbg[sqlalchemy]`, but works with raw Psycopg, too):
 
 ```python
+import bgt
 import pgbg
 
 from pgbg.sqlalchemy import start_elected_service
@@ -110,11 +111,11 @@ def cleanup_cache() -> bool:
 
 
 with start_elected_service(
-    pgbg.as_work_factory(cleanup_cache),
+    bgt.as_work_factory(cleanup_cache),
     engine,
     name="psycache-cleanup",
     worker_id="worker-01.example.internal",  # unique per process
-    wakeup=pgbg.IntervalOnlyWakeup(),
+    wakeup=bgt.IntervalOnlyWakeup(),
     interval=60,
 ):
     ...  # your application runs here
