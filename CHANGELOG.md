@@ -27,6 +27,7 @@ You can find our backwards-compatibility policy [here](https://github.com/hynek/
 
 - sqlalchemy: Imports from `sqlalchemy.ext.asyncio` are now protected using `if TYPE_CHECKING:`.
   This fixes the runtime dependency on *greenlet* on SQLALchemy 2.1+, even if `psycache.sqlalchemy.AsyncSQLAlchemyCachePool` is not used.
+  [#11](https://github.com/hynek/psycache/pull/6)
 
 
 ## [26.3.0](https://github.com/hynek/psycache/compare/26.2.0...26.3.0) - 2026-06-26
