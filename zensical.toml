@@ -12,6 +12,10 @@ edit_uri = "edit/main/docs/"
 
 # Trigger Read the Docs' search addon instead of Zensical's default.
 extra_javascript = ["assets/javascript/readthedocs.js"]
+extra_css = [
+  # Custom fonts (Inter + Berkeley Mono).
+  "assets/stylesheets/fonts.css",
+]
 
 nav = [
   { "Overview" = "index.md" },
