@@ -11,7 +11,7 @@ A minimal, do-nothing provider looks like this:
 
 <!-- skip: next -->
 ```python
-from collections.abc import Iterator
+from collections.abc import Generator
 from contextlib import contextmanager
 
 
@@ -19,23 +19,23 @@ class MyInstrumentation:
     @contextmanager
     def start_cache_get_span(
         self, key: str, name: str | None
-    ) -> Iterator[CacheGetSpan]: ...
+    ) -> Generator[CacheGetSpan]: ...
 
     @contextmanager
     def start_cache_put_span(
         self, key: str, name: str | None
-    ) -> Iterator[CachePutSpan]: ...
+    ) -> Generator[CachePutSpan]: ...
 
     @contextmanager
     def start_cache_remove_span(
         self, key: str
-    ) -> Iterator[CacheRemoveSpan]: ...
+    ) -> Generator[CacheRemoveSpan]: ...
 
     @contextmanager
-    def start_cache_cleanup_span(self) -> Iterator[CacheCleanupSpan]: ...
+    def start_cache_cleanup_span(self) -> Generator[CacheCleanupSpan]: ...
 
     @contextmanager
-    def start_cache_flush_span(self) -> Iterator[CacheFlushSpan]: ...
+    def start_cache_flush_span(self) -> Generator[CacheFlushSpan]: ...
 ```
 
 Because the protocol is [structural](https://typing.python.org/en/latest/spec/protocol.html), you don't need to inherit from anything.

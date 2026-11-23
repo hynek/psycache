@@ -6,7 +6,7 @@
 Integration with [`psycopg_pool`](https://www.psycopg.org/psycopg3/docs/api/pool.html).
 """
 
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import AsyncGenerator, Generator
 from contextlib import asynccontextmanager, contextmanager
 from typing import Any
 
@@ -28,7 +28,7 @@ class PsycopgCachePool:
         self._pool = pool
 
     @contextmanager
-    def connect(self) -> Iterator[psycopg.Connection]:
+    def connect(self) -> Generator[psycopg.Connection]:
         with self._pool.connection() as conn:
             autocommit = conn.autocommit
             conn.autocommit = True
@@ -52,7 +52,7 @@ class AsyncPsycopgCachePool:
         self._pool = pool
 
     @asynccontextmanager
-    async def connect(self) -> AsyncIterator[psycopg.AsyncConnection]:
+    async def connect(self) -> AsyncGenerator[psycopg.AsyncConnection]:
         async with self._pool.connection() as conn:
             autocommit = conn.autocommit
             await conn.set_autocommit(True)

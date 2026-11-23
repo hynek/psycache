@@ -4,7 +4,7 @@
 
 import importlib.util
 
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import AsyncGenerator, Generator
 from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass
 from doctest import ELLIPSIS
@@ -104,7 +104,7 @@ class _RawCachePool:
     dsn: str
 
     @contextmanager
-    def connect(self) -> Iterator[psycopg.Connection]:
+    def connect(self) -> Generator[psycopg.Connection]:
         """
         Yield a fresh autocommit psycopg connection.
         """
@@ -135,7 +135,7 @@ class _RawAsyncCachePool:
     dsn: str
 
     @asynccontextmanager
-    async def connect(self) -> AsyncIterator[psycopg.AsyncConnection]:
+    async def connect(self) -> AsyncGenerator[psycopg.AsyncConnection]:
         """
         Yield a fresh autocommit psycopg async connection.
         """

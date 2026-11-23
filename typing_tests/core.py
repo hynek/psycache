@@ -1,6 +1,6 @@
 import datetime as dt
 
-from collections.abc import Iterator
+from collections.abc import Generator
 from contextlib import contextmanager
 
 import psycopg
@@ -22,7 +22,7 @@ class RawCachePool:
         self.dsn = dsn
 
     @contextmanager
-    def connect(self) -> Iterator[psycopg.Connection]:
+    def connect(self) -> Generator[psycopg.Connection]:
         with psycopg.connect(self.dsn, autocommit=True) as conn:
             yield conn
 

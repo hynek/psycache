@@ -6,7 +6,7 @@
 Generic span helpers.
 """
 
-from collections.abc import Iterator, Sequence
+from collections.abc import Generator, Sequence
 from contextlib import ExitStack, contextmanager
 
 from psycache.typing import (
@@ -93,7 +93,7 @@ def _lookup_span(
     instrumentations: Sequence[CacheInstrumentation],
     key: str,
     name: str | None,
-) -> Iterator[CacheGetSpan]:
+) -> Generator[CacheGetSpan]:
     if not instrumentations:
         yield NoopAnySpan()
         return
@@ -111,7 +111,7 @@ def _put_span(
     instrumentations: Sequence[CacheInstrumentation],
     key: str,
     name: str | None,
-) -> Iterator[CachePutSpan]:
+) -> Generator[CachePutSpan]:
     if not instrumentations:
         yield NoopAnySpan()
         return
@@ -128,7 +128,7 @@ def _put_span(
 def _remove_span(
     instrumentations: Sequence[CacheInstrumentation],
     key: str,
-) -> Iterator[CacheRemoveSpan]:
+) -> Generator[CacheRemoveSpan]:
     if not instrumentations:
         yield NoopAnySpan()
         return
@@ -144,7 +144,7 @@ def _remove_span(
 @contextmanager
 def _cleanup_span(
     instrumentations: Sequence[CacheInstrumentation],
-) -> Iterator[CacheCleanupSpan]:
+) -> Generator[CacheCleanupSpan]:
     if not instrumentations:
         yield NoopAnySpan()
         return
@@ -160,7 +160,7 @@ def _cleanup_span(
 @contextmanager
 def _flush_span(
     instrumentations: Sequence[CacheInstrumentation],
-) -> Iterator[CacheFlushSpan]:
+) -> Generator[CacheFlushSpan]:
     if not instrumentations:
         yield NoopAnySpan()
         return

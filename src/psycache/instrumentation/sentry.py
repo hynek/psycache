@@ -14,7 +14,7 @@ Span instances are not frozen because they're instantiated a lot so we go for
 performance.
 """
 
-from collections.abc import Iterator
+from collections.abc import Generator
 from contextlib import contextmanager
 
 import sentry_sdk
@@ -120,7 +120,7 @@ class SentryInstrumentation:
     @contextmanager
     def start_cache_get_span(
         self, key: str, name: str | None
-    ) -> Iterator[CacheGetSpan]:
+    ) -> Generator[CacheGetSpan]:
         with sentry_sdk.start_span(
             name=name or "psycache get",
             attributes={"sentry.op": "cache.get", "cache.key": [key]},
@@ -130,7 +130,7 @@ class SentryInstrumentation:
     @contextmanager
     def start_cache_put_span(
         self, key: str, name: str | None
-    ) -> Iterator[CachePutSpan]:
+    ) -> Generator[CachePutSpan]:
         with sentry_sdk.start_span(
             name=name or "psycache put",
             attributes={"sentry.op": "cache.put", "cache.key": [key]},
@@ -138,7 +138,7 @@ class SentryInstrumentation:
             yield _SentryCachePutSpan(key, span)
 
     @contextmanager
-    def start_cache_remove_span(self, key: str) -> Iterator[CacheRemoveSpan]:
+    def start_cache_remove_span(self, key: str) -> Generator[CacheRemoveSpan]:
         with sentry_sdk.start_span(
             name="psycache remove",
             attributes={"sentry.op": "cache.remove", "cache.key": [key]},
@@ -146,11 +146,11 @@ class SentryInstrumentation:
             yield _SentryCacheRemoveSpan(key, span)
 
     @contextmanager
-    def start_cache_cleanup_span(self) -> Iterator[CacheCleanupSpan]:
+    def start_cache_cleanup_span(self) -> Generator[CacheCleanupSpan]:
         yield NoopAnySpan()
 
     @contextmanager
-    def start_cache_flush_span(self) -> Iterator[CacheFlushSpan]:
+    def start_cache_flush_span(self) -> Generator[CacheFlushSpan]:
         with sentry_sdk.start_span(
             name="psycache flush", attributes={"sentry.op": "cache.flush"}
         ) as span:
