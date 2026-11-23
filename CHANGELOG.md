@@ -19,6 +19,7 @@ You can find our backwards-compatibility policy [here](https://github.com/hynek/
 
 - `psycache.instrumentation.sentry.SentryInstrumentation` now requires *sentry-sdk* 3.0 or later.
   The span data are now span attributes, and the operation is the `sentry.op` attribute.
+  [#12](https://github.com/hynek/psycache/pull/12)
 
 
 ## [26.4.0](https://github.com/hynek/psycache/compare/26.3.0...26.4.0) - 2026-09-29
@@ -35,7 +36,7 @@ You can find our backwards-compatibility policy [here](https://github.com/hynek/
 
 - sqlalchemy: Imports from `sqlalchemy.ext.asyncio` are now protected using `if TYPE_CHECKING:`.
   This fixes the runtime dependency on *greenlet* on SQLALchemy 2.1+, even if `psycache.sqlalchemy.AsyncSQLAlchemyCachePool` is not used.
-  [#11](https://github.com/hynek/psycache/pull/6)
+  [#11](https://github.com/hynek/psycache/pull/11)
 
 
 ## [26.3.0](https://github.com/hynek/psycache/compare/26.2.0...26.3.0) - 2026-06-26
