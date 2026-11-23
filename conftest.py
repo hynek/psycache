@@ -4,7 +4,7 @@
 
 import importlib.util
 
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import AsyncGenerator, Generator
 from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass
 from doctest import ELLIPSIS
@@ -104,7 +104,7 @@ class _RawCachePool:
     dsn: str
 
     @contextmanager
-    def connect(self) -> Iterator[psycopg.Connection]:
+    def connect(self) -> Generator[psycopg.Connection]:
         """
         Yield a fresh autocommit psycopg connection.
         """
@@ -112,13 +112,18 @@ class _RawCachePool:
             yield conn
 
 
+@pytest.fixture(name="raw_pool")
+def _raw_pool(db_dsn: str) -> _RawCachePool:
+    return _RawCachePool(db_dsn)
+
+
 @pytest.fixture(
     name="cache",
     params=_INSTRUMENTATIONS,
     ids=["none", "both"],
 )
-def _cache(request: pytest.FixtureRequest, db_dsn: str):
-    return PostgresCache(_RawCachePool(db_dsn), instrumentations=request.param)
+def _cache(request: pytest.FixtureRequest, raw_pool: _RawCachePool):
+    return PostgresCache(raw_pool, instrumentations=request.param)
 
 
 @dataclass
@@ -130,7 +135,7 @@ class _RawAsyncCachePool:
     dsn: str
 
     @asynccontextmanager
-    async def connect(self) -> AsyncIterator[psycopg.AsyncConnection]:
+    async def connect(self) -> AsyncGenerator[psycopg.AsyncConnection]:
         """
         Yield a fresh autocommit psycopg async connection.
         """

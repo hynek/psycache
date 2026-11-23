@@ -6,7 +6,7 @@
 Prometheus-backed cache instrumentation.
 """
 
-from collections.abc import Iterator
+from collections.abc import Generator
 from contextlib import contextmanager
 
 from prometheus_client import Counter, Gauge, Histogram
@@ -124,7 +124,7 @@ class PrometheusInstrumentation:
     @contextmanager
     def start_cache_get_span(
         self, key: str, name: str | None
-    ) -> Iterator[CacheGetSpan]:
+    ) -> Generator[CacheGetSpan]:
         span_name = name or ""
         with CACHE_GET_DURATION.labels(span_name=span_name).time():
             yield _PrometheusCacheGetSpan(span_name)
@@ -132,25 +132,25 @@ class PrometheusInstrumentation:
     @contextmanager
     def start_cache_put_span(
         self, key: str, name: str | None
-    ) -> Iterator[CachePutSpan]:
+    ) -> Generator[CachePutSpan]:
         span_name = name or ""
         with CACHE_PUT_DURATION.labels(span_name=span_name).time():
             yield _PrometheusCachePutSpan(span_name)
 
     @contextmanager
-    def start_cache_remove_span(self, key: str) -> Iterator[CacheRemoveSpan]:
+    def start_cache_remove_span(self, key: str) -> Generator[CacheRemoveSpan]:
         with CACHE_REMOVE_DURATION.time():
             yield _PrometheusCacheRemoveSpan()
 
     @contextmanager
     def start_cache_cleanup_span(
         self,
-    ) -> Iterator[CacheCleanupSpan]:
+    ) -> Generator[CacheCleanupSpan]:
         yield _PrometheusCacheCleanupSpan()
 
     @contextmanager
     def start_cache_flush_span(
         self,
-    ) -> Iterator[CacheFlushSpan]:
+    ) -> Generator[CacheFlushSpan]:
         with CACHE_FLUSH_DURATION.time():
             yield _PrometheusCacheFlushSpan()

@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator, Iterator
+    from collections.abc import AsyncGenerator, Generator
 
     import psycopg
 
@@ -37,7 +37,7 @@ class SQLAlchemyCachePool:
         self._engine = engine
 
     @contextmanager
-    def connect(self) -> Iterator[psycopg.Connection]:
+    def connect(self) -> Generator[psycopg.Connection]:
         with self._engine.connect().execution_options(
             isolation_level="AUTOCOMMIT"
         ) as conn:
@@ -57,7 +57,7 @@ class AsyncSQLAlchemyCachePool:
         self._engine = engine
 
     @asynccontextmanager
-    async def connect(self) -> AsyncIterator[psycopg.AsyncConnection]:
+    async def connect(self) -> AsyncGenerator[psycopg.AsyncConnection]:
         async with self._engine.connect() as sa_conn:
             conn = await sa_conn.execution_options(
                 isolation_level="AUTOCOMMIT"

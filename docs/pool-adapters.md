@@ -56,7 +56,7 @@ If neither adapter fits, implement the [`psycache.typing.CachePool`][] protocol 
 All it requires is a `connect()` context manager that yields a [`psycopg.Connection`][]:
 
 ```python
-from collections.abc import Iterator
+from collections.abc import Generator
 from contextlib import contextmanager
 
 import psycopg
@@ -64,5 +64,5 @@ import psycopg
 
 class MyCachePool:
     @contextmanager
-    def connect(self) -> Iterator[psycopg.Connection]: ...
+    def connect(self) -> Generator[psycopg.Connection]: ...
 ```
