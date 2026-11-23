@@ -112,13 +112,18 @@ class _RawCachePool:
             yield conn
 
 
+@pytest.fixture(name="raw_pool")
+def _raw_pool(db_dsn: str) -> _RawCachePool:
+    return _RawCachePool(db_dsn)
+
+
 @pytest.fixture(
     name="cache",
     params=_INSTRUMENTATIONS,
     ids=["none", "both"],
 )
-def _cache(request: pytest.FixtureRequest, db_dsn: str):
-    return PostgresCache(_RawCachePool(db_dsn), instrumentations=request.param)
+def _cache(request: pytest.FixtureRequest, raw_pool: _RawCachePool):
+    return PostgresCache(raw_pool, instrumentations=request.param)
 
 
 @dataclass

@@ -30,7 +30,7 @@ dependencies = ["psycopg>3"]
 
 [project.optional-dependencies]
 prometheus = ["prometheus-client"]
-sentry = ["sentry-sdk"]
+sentry = ["sentry-sdk>=3"]
 sqlalchemy = ["sqlalchemy"]
 sqlalchemy-asyncio = ["sqlalchemy[asyncio]"]
 pool = ["psycopg-pool"]
@@ -51,13 +51,12 @@ tests = ["coverage", "pytest", "pytest-asyncio", "sybil"]
 docs = ["zensical", "mkdocstrings-python"]
 dev = [
     { include-group = "tests" },
+    "psycache[pool,sqlalchemy-asyncio,sentry]",
     "mypy",
     "prometheus-client",
     "pyrefly",
     "ruff",
-    "sentry-sdk",
     "ty",
-    "psycache[pool,sqlalchemy-asyncio]"
 ]
 
 

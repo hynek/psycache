@@ -19,7 +19,7 @@ from contextlib import contextmanager
 
 import sentry_sdk
 
-from sentry_sdk.tracing import Span
+from sentry_sdk.traces import Span
 
 from psycache.instrumentation import NoopAnySpan
 from psycache.typing import (
@@ -46,13 +46,16 @@ class _SentryCacheGetSpan:
         self._span = span
 
     def record_cache_hit(self, item_size: int) -> None:
-        self._span.set_data("cache.hit", True)
-        self._span.set_data("cache.item_size", item_size)
-        self._span.set_data("cache.success", True)
+        self._span.set_attributes(
+            {
+                "cache.hit": True,
+                "cache.item_size": item_size,
+                "cache.success": True,
+            }
+        )
 
     def record_cache_miss(self) -> None:
-        self._span.set_data("cache.hit", False)
-        self._span.set_data("cache.success", True)
+        self._span.set_attributes({"cache.hit": False, "cache.success": True})
 
 
 class _SentryCachePutSpan:
@@ -70,8 +73,9 @@ class _SentryCachePutSpan:
         self._span = span
 
     def record_put(self, item_size: int) -> None:
-        self._span.set_data("cache.item_size", item_size)
-        self._span.set_data("cache.success", True)
+        self._span.set_attributes(
+            {"cache.item_size": item_size, "cache.success": True}
+        )
 
 
 class _SentryCacheRemoveSpan:
@@ -89,7 +93,7 @@ class _SentryCacheRemoveSpan:
         self._span = span
 
     def record_removed(self) -> None:
-        self._span.set_data("cache.success", True)
+        self._span.set_attribute("cache.success", True)
 
 
 class _SentryCacheFlushSpan:
@@ -105,7 +109,7 @@ class _SentryCacheFlushSpan:
         self._span = span
 
     def record_flush(self, num_flushed: int) -> None:
-        self._span.set_data("cache.num_flushed", num_flushed)
+        self._span.set_attribute("cache.num_flushed", num_flushed)
 
 
 class SentryInstrumentation:
@@ -118,10 +122,9 @@ class SentryInstrumentation:
         self, key: str, name: str | None
     ) -> Iterator[CacheGetSpan]:
         with sentry_sdk.start_span(
-            op="cache.get", name=name or "psycache get"
+            name=name or "psycache get",
+            attributes={"sentry.op": "cache.get", "cache.key": [key]},
         ) as span:
-            span.set_data("cache.key", [key])
-
             yield _SentryCacheGetSpan(key, span)
 
     @contextmanager
@@ -129,19 +132,17 @@ class SentryInstrumentation:
         self, key: str, name: str | None
     ) -> Iterator[CachePutSpan]:
         with sentry_sdk.start_span(
-            op="cache.put", name=name or "psycache put"
+            name=name or "psycache put",
+            attributes={"sentry.op": "cache.put", "cache.key": [key]},
         ) as span:
-            span.set_data("cache.key", [key])
-
             yield _SentryCachePutSpan(key, span)
 
     @contextmanager
     def start_cache_remove_span(self, key: str) -> Iterator[CacheRemoveSpan]:
         with sentry_sdk.start_span(
-            op="cache.remove", name="psycache remove"
+            name="psycache remove",
+            attributes={"sentry.op": "cache.remove", "cache.key": [key]},
         ) as span:
-            span.set_data("cache.key", [key])
-
             yield _SentryCacheRemoveSpan(key, span)
 
     @contextmanager
@@ -151,6 +152,6 @@ class SentryInstrumentation:
     @contextmanager
     def start_cache_flush_span(self) -> Iterator[CacheFlushSpan]:
         with sentry_sdk.start_span(
-            op="cache.flush", name="psycache flush"
+            name="psycache flush", attributes={"sentry.op": "cache.flush"}
         ) as span:
             yield _SentryCacheFlushSpan(span)
