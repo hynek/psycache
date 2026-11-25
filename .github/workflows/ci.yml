@@ -9,6 +9,7 @@ on:
 
 env:
   FORCE_COLOR: "1" # Make tools pretty.
+  UV_LOCKED: "1" # Crash loudly on uv.lock vs pyproject.toml inconsistencies
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -78,7 +79,7 @@ jobs:
 
       - name: Run tests
         run: >
-          uvx --with tox-uv-bare
+          uv run --only-group tox
           tox run
           --installpkg dist/*.whl
           -f ${PYTHON}-tests
@@ -114,16 +115,14 @@ jobs:
 
       - name: Combine coverage and fail if it's <100%.
         run: |
-          uv tool install coverage
-
-          coverage combine
-          coverage html --skip-covered --skip-empty
+          uv run --only-group cov coverage combine
+          uv run --only-group cov coverage html --skip-covered --skip-empty
 
           # Report and write to summary.
-          coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+          uv run --only-group cov coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
 
           # Report again and fail if under 100%.
-          coverage report --fail-under=100
+          uv run --only-group cov coverage report --fail-under=100
 
       - name: Upload HTML report if check failed.
         uses: actions/upload-artifact@v7.0.2
@@ -150,7 +149,7 @@ jobs:
       - uses: hynek/setup-cached-uv@v2.6.0
 
       - run: >
-          uvx --with tox-uv-bare
+          uv run --only-group tox
           tox run -f typing
 
   docs:
@@ -184,7 +183,7 @@ jobs:
           until sudo -u postgres pg_isready -q; do sleep 1; done
 
       - run: >
-          uvx --with tox-uv-bare
+          uv run --only-group tox
           tox run -e docs-doctests
 
   docs-build:
@@ -204,8 +203,25 @@ jobs:
       - uses: hynek/setup-cached-uv@v2.6.0
 
       - run: >
-          uvx --with tox-uv-bare
+          uv run --only-group tox
           tox run -e docs-build -- --strict
+
+  lint:
+    name: Run linters
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version-file: .python-version
+      - uses: hynek/setup-cached-uv@v2.6.0
+
+      - run: >
+          uv run --only-group tox
+          tox run -f lint
 
   install-dev:
     name: Verify dev env
@@ -220,8 +236,7 @@ jobs:
           python-version-file: .python-version
       - uses: hynek/setup-cached-uv@v2.6.0
 
-      - run: uv venv
-      - run: uv pip install -e . --group dev
+      - run: uv sync
 
       - run: .venv/bin/python -Ic 'from importlib.metadata import version; print(version("psycache"))'
 
@@ -232,6 +247,7 @@ jobs:
     needs:
       - coverage
       - install-dev
+      - lint
       - typing
       - docs
       - docs-build

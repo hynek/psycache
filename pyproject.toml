@@ -47,17 +47,38 @@ Twitter = "https://twitter.com/hynek"
 
 
 [dependency-groups]
-tests = ["coverage", "pytest", "pytest-asyncio", "sybil"]
-docs = ["zensical", "mkdocstrings-python"]
-dev = [
+tests = ["pytest", "pytest-asyncio", "sybil"]
+cov = [{ include-group = "tests" }, "coverage"]
+doctests = [
     { include-group = "tests" },
-    "psycache[pool,sqlalchemy-asyncio,sentry]",
-    "mypy",
-    "prometheus-client",
-    "pyrefly",
-    "ruff",
-    "ty",
+    # Doctests run only on .python-version.
+    "pgbg; python_version >= '3.12'",
 ]
+docs = ["zensical", "mkdocstrings-python"]
+mypy = ["mypy"]
+pyright = ["pyright"]
+ty = ["ty"]
+pyrefly = ["pyrefly"]
+lint = ["prek", "ruff"]
+tox = ["tox>=4.51.1", "tox-uv-bare"]
+dev = [
+    { include-group = "cov" },
+    { include-group = "mypy" },
+    { include-group = "ty" },
+    { include-group = "pyrefly" },
+    { include-group = "lint" },
+    { include-group = "tox" },
+    "psycache[pool,prometheus,sentry,sqlalchemy-asyncio]",
+]
+
+
+[tool.uv]
+# Dependency cooldown
+exclude-newer = "1 week"
+
+[tool.uv.exclude-newer-package]
+# Remove after 2026-11-30
+sentry-sdk = "2026-11-24T00:00:00Z"
 
 
 [tool.hatch.version]
