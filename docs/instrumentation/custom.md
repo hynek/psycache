@@ -39,4 +39,4 @@ class MyInstrumentation:
 ```
 
 Because the protocol is [structural](https://typing.python.org/en/latest/spec/protocol.html), you don't need to inherit from anything.
-Any object with these methods qualifies, and type checkers will verify the fit where you pass it to [`PostgresCache`](psycache.PostgresCache].
+Any object with these methods qualifies, and type checkers will verify the fit where you pass it to [`PostgresCache`][psycache.PostgresCache].
